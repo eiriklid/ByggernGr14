@@ -27,6 +27,20 @@ int JOY_y_pos(){
 	volatile char * ADC_Adress = (char*) 0x1400;
 	ADC_Adress[0]= 0x04;
 	_delay_ms(1);
-	return digital2Prosent(ADC_Adress[0]);
+	return digital2Prosent(ADC_Adress[0]);	
+}
+
+
+int JOY_button(int button){
+	if (button ==1)
+	{
+		
+	} 
+	else
+	{
+		
+	}
 	
 }
+
+
