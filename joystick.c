@@ -50,6 +50,29 @@ int JOY_slider(int slider){
 	
 }
 
+joy_dir JOY_direction(JOY_x_pos(), JOY_y_pos()){
+
+	//Neutral
+	if( (-5 < JOY_x_pos() < 5) &&	(-5 < JOY_y_pos() < 5)){
+		return NEUTRAL;
+	}
+		
+	switch(JOY_x_pos(), JOY_y_pos()){
+		
+		case
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+}
+
+
 int JOY_button(int button){
 	if (button ==1)
 	{
