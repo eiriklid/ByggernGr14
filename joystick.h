@@ -32,7 +32,7 @@ int JOY_y_pos();
 int JOY_slider(int slider);
 int JOY_button(int button);
 
-typedef enum 
+typedef enum {LEFT, RIGHT, UP, DOWN, NEUTRAL} joy_dir;
 
 
 #endif /* JOYSTICK_H_ */
