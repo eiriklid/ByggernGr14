@@ -6,6 +6,7 @@
  */ 
 
 #include <util/delay.h>
+#include <stdio.h>
 
 #include "joystick.h"
 
@@ -51,9 +52,7 @@ int JOY_slider(int slider){
 }
 
 joy_dir JOY_direction(JOY_x_pos, JOY_y_pos){
-
-	//Neutral
-	if( (-5 < JOY_x_pos() < 5) &&	(-5 < JOY_y_pos() < 5)){
+	if( (JOY_x_pos < 5) &&	(JOY_y_pos < 5) && (JOY_x_pos > -5) && (JOY_y_pos > -5)){
 		return NEUTRAL;
 	}
 	
@@ -73,6 +72,18 @@ joy_dir JOY_direction(JOY_x_pos, JOY_y_pos){
 
 	
 }
+
+const char* dir2string( joy_dir dir){
+	
+	switch(dir){
+		case NEUTRAL: return "NEUTRAL";
+		case LEFT:	return "LEFT";
+		case RIGHT: return "RIGHT";
+		case DOWN:	return "DOWN";
+		case UP:	return "UP";
+	}
+}
+	
 
 
 int JOY_button(int button){
