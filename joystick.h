@@ -26,14 +26,17 @@ Button pins:
 #ifndef JOYSTICK_H_
 #define JOYSTICK_H_
 
+typedef enum {LEFT, RIGHT, UP, DOWN, NEUTRAL} joy_dir;
+	
 int digital2Prosent(int val);
 int JOY_x_pos();
 int JOY_y_pos();
 int JOY_slider(int slider);
 int JOY_button(int button);
 joy_dir JOY_direction(JOY_x_pos, JOY_y_pos);
+const char* dir2string( joy_dir dir);
 
-typedef enum {LEFT, RIGHT, UP, DOWN, NEUTRAL} joy_dir;
+
 
 
 #endif /* JOYSTICK_H_ */
