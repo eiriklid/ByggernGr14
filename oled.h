@@ -14,6 +14,8 @@ void write_d(char data);
 
 void OLED_init();
 void OLED_reset();
+void OLED_print_char(char character);
+void OLED_print_string(char* string);
 
 
 
