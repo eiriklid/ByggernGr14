@@ -31,6 +31,7 @@ int JOY_x_pos();
 int JOY_y_pos();
 int JOY_slider(int slider);
 int JOY_button(int button);
+joy_dir JOY_direction(JOY_x_pos, JOY_y_pos);
 
 typedef enum {LEFT, RIGHT, UP, DOWN, NEUTRAL} joy_dir;
 
