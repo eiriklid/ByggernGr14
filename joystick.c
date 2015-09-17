@@ -6,7 +6,7 @@
  */ 
 
 #include <util/delay.h>
-#include <stdio.h>
+
 
 #include "joystick.h"
 
