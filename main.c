@@ -7,9 +7,9 @@
 
 
 //#define FOSC 1843200// Clock Speed
-#define FOSC 4915200// Clock Speed
+#define F_CPU 4915200// Clock Speed
 #define BAUD 9600
-#define MYUBRR FOSC/16/BAUD-1
+#define MYUBRR F_CPU/16/BAUD-1
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -20,6 +20,7 @@
 #include "macros.h"
 #include "sram.h"
 #include "joystick.h"
+#include "oled.h"
 
 int main(void)
 {
@@ -27,12 +28,19 @@ int main(void)
 	
 	DDRB |= (1<<PB0);
 	USART_Init(31);
-	//unsigned char usart_char;
+	
 	MCUCR |= (1 << SRE);
 	fdevopen(USART_Transmit,USART_Receive);
 	//SRAM_test();
-	volatile char * ADC_Adress = (char*) 0x1400;
-	unsigned int x_pos_digi;
+	
+	OLED_init();
+	OLED_reset();
+	
+	write_c(0xa6);
+	OLED_print_string("Strengen virker jaevla lang, et blekt blekt ansikt med en matchende char! ");
+	
+	
+	
     while(1)
     {
 		set_bit(PORTB,PB0);
@@ -73,11 +81,16 @@ int main(void)
 		*/
 		
 
-		
+		/*
 		//printf("X er: %d \t Y er: %d \t", JOY_x_pos(),JOY_y_pos());
-		
 		printf("Direction: %s \n", dir2string( JOY_direction( JOY_x_pos(), JOY_y_pos()) ) );
+		printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
+		*/
 		
+		OLED_print_string()
+		
+		
+		_delay_ms(200);
 		clear_bit(PORTB,PB0);
 		_delay_ms(200);
     }
