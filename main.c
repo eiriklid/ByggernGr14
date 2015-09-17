@@ -72,14 +72,11 @@ int main(void)
 		_delay_ms(500);
 		*/
 		
-		/*
-		ADC_Adress[0]= 0x04;
-		_delay_ms(50);
-		x_pos_digi = ADC_Adress[0];
-		printf("X: %d \n",x_pos_digi);
-		*/
+
 		
-		printf("X er: %d \t Y er: %d \n", JOY_x_pos(),JOY_y_pos());
+		//printf("X er: %d \t Y er: %d \t", JOY_x_pos(),JOY_y_pos());
+		
+		printf("Direction: %s \n", dir2string( JOY_direction( JOY_x_pos(), JOY_y_pos()) ) );
 		
 		clear_bit(PORTB,PB0);
 		_delay_ms(200);
