@@ -30,8 +30,8 @@ long Ultrasonic::Timing()
 long Ultrasonic::Ranging()
 {
   Timing();
-  distacne_cm = duration /29 / 2 ;
+  distance_cm = duration /29 / 2 ;
   
   
-  return distacne_cm;
+  return distance_cm;
 }
