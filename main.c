@@ -33,13 +33,13 @@ int main(void)
 	fdevopen(USART_Transmit,USART_Receive);
 	//SRAM_test();
 	
+	JOY_init();
+	
 	OLED_init();
 	OLED_reset();
 	
-	write_c(0xa6);
-	OLED_print_string("Strengen virker jaevla lang, et blekt blekt ansikt med en matchende char! ");
-	
-	
+	int pageCom = 0xb0;
+
 	
     while(1)
     {
@@ -81,14 +81,40 @@ int main(void)
 		*/
 		
 
-		/*
+		
 		//printf("X er: %d \t Y er: %d \t", JOY_x_pos(),JOY_y_pos());
-		printf("Direction: %s \n", dir2string( JOY_direction( JOY_x_pos(), JOY_y_pos()) ) );
-		printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
+		//printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
+		//printf("Direction: %d \n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
+		
+		
+		
+		/*
+		write_c(pageCom++);
+		write_c(0x0a);
+		write_c(0x10);
+		OLED_print_string("lol, er det mulig?");
+		if (pageCom == 0xb7)
+		{pageCom=0xb0;
+		}
 		*/
 		
-		OLED_print_string()
+		OLED_menu();
 		
+		OLED_print_arrow(2, 0x20);
+		
+		joy_dir direction = JOY_direction(JOY_x_pos(), JOY_y_pos());
+		if (direction == DOWN){
+			OLED_print_arrow(4, 0x20);
+				
+		}
+		if (direction == UP){
+			OLED_print_arrow(6, 0x20);
+		}
+		
+		
+		printf("Left: %d \n",JOY_button(1));
+		printf("Right: %d \n",JOY_button(0));
+
 		
 		_delay_ms(200);
 		clear_bit(PORTB,PB0);
