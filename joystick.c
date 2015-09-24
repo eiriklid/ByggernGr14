@@ -6,7 +6,7 @@
  */ 
 
 #include <util/delay.h>
-
+#include <avr/io.h>
 
 #include "joystick.h"
 
@@ -89,13 +89,22 @@ const char* dir2string( joy_dir dir){
 int JOY_button(int button){
 	if (button ==1)
 	{
+		return( (PINB & (1<< PB1)) == (1<<PB1));
 		
 	} 
 	else
 	{
-		
+		 return ( (PINB & (1<< PB2)) == (1<< PB2) );
 	}
-	return 0;
+	return -1;
+	
+}
+
+void JOY_init(){
+	
+	clear_bit(DDRB, PB1);
+	clear_bit(DDRB, PB2);
+	
 	
 }
 
