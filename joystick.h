@@ -17,8 +17,8 @@ Slider-Filter pins:
 
 Button pins:
 
-	Pin PD0  (left button)  --> MCU-PB1	
-	Pin PB5  (right button) --> MCU-PB2
+	Pin PB5  (left button)  --> MCU-PB1	
+	Pin PD0  (right button) --> MCU-PB2
 
 */
 
@@ -32,9 +32,10 @@ int digital2Prosent(int val);
 int JOY_x_pos();
 int JOY_y_pos();
 int JOY_slider(int slider);
-int JOY_button(int button);
+int JOY_button(int button);  //button=1 left, button=0 right 
 joy_dir JOY_direction(JOY_x_pos, JOY_y_pos);
 const char* dir2string( joy_dir dir);
+void JOY_init();
 
 
 
