@@ -134,7 +134,7 @@ void OLED_init()
 	write_c(0xd9);    //set pre-charge period
 	write_c(0x21);
 	write_c(0x20);    //Set Memory Addressing Mode
-	write_c(0x00);
+	write_c(0x02);
 	write_c(0xdb);    //VCOM deselect level mode
 	write_c(0x30);
 	write_c(0xad);    //master configuration
@@ -145,19 +145,23 @@ void OLED_init()
 }
 
 void OLED_reset(){
-	for (int i = 0; i < 1024; i++) //Clears the screen
+	
+	for (int i = 0; i < 8; i++) //Clears the screen
 	{
+		OLED_clear_line(i);
+	}
+	
+}
+
+void OLED_clear_line(uint8_t line){
+	
+	OLED_pos(line, 0x00);
+	for(int i = 0; i < 128; i++){
 		write_d(0x00);
 	}
 	
-	write_c(0x21); // Set column to 0
-	write_c(0x00);
-	write_c(0x7F);
-	
-	write_c(0x22); // Set page to 0
-	write_c(0x00);
-	write_c(0x07);
 }
+
 void OLED_print_char(char character){
 	
 	for (int i = 0; i < 5; i++)
@@ -173,4 +177,37 @@ void OLED_print_string(char* string){
 	{
 		OLED_print_char(string[i]);
 	}
+}
+
+void OLED_print_arrow(uint8_t row, uint8_t col){
+	
+	OLED_pos(row, col);
+	write_d(0b00011000);
+	write_d(0b00011000);
+	write_d(0b01111110);
+	write_d(0b00111100);
+	write_d(0b00011000);
+	
+}
+
+void OLED_pos(uint8_t row, uint8_t col){
+	uint8_t low_col		= (col & (0xf) );					//And-operation between col and 0b1111
+	uint8_t high_col	= ((col >> 4) & (0xf) ) + 0x10;		//Bitwise-shifting, And-Operation, Offset to write to higher column start address
+	
+	write_c((row & 7) + 0xb0);
+	write_c(low_col);
+	write_c(high_col);
+}
+
+void OLED_menu(){
+	
+	OLED_pos(0, 0);
+	OLED_print_string("Main Menu");
+	OLED_pos(2, 0x30);
+	OLED_print_string("Play Game!");
+	OLED_pos(4, 0x30);
+	OLED_print_string("Highscore");
+	OLED_pos(6, 0x30);
+	OLED_print_string("Settings");
+	
 }
