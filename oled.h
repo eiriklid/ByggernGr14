@@ -8,7 +8,7 @@
 
 #ifndef OLED_H_
 #define OLED_H_
-
+#include "menu.h"
 #include <stdint.h>
 
 void write_c(char command);
@@ -20,10 +20,12 @@ void OLED_print_char(char character);
 void OLED_print_string(char* string);
 void OLED_print_arrow(uint8_t row, uint8_t col);
 void OLED_pos(uint8_t row, uint8_t col);
-void OLED_menu();
+void OLED_menu();    //FLYTT TIL MENU.C
 void OLED_clear_line(uint8_t line);
-
-
+void OLED_print_menu(MenuNode* node);
+void OLED_move_arrow(uint8_t dir); //1 moves arrow up, 3 moves arrow down
+void OLED_print_submenu();
+void OLED_print_parentmenu();
 
 
 #endif /* OLED_H_ */
