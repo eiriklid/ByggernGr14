@@ -8,21 +8,10 @@
 #include "menu.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 
-typedef struct MenuNode {
-	
-	struct MenuNode *next;
-	struct MenuNode *prev;
-	struct MenuNode *parent;
-	struct MenuNode *child;
-	
-	
-	char* name;
-	
-} MenuNode;
-
-
+/*
 typedef struct Menu {
 	MenuNode * topMenu;
 	
@@ -32,22 +21,59 @@ Menu* menu_create()
 {
 	return malloc(sizeof(Menu));	
 }
-
-void menu_init(){
+*/
+MenuNode* menu_init(char *name){
+	MenuNode *top_menu = (MenuNode*)malloc(sizeof(MenuNode));
+	
+	if (top_menu == NULL)
+	{
+		printf("Memory is full... \n");
+		exit(1);
+	}
+	top_menu->name		= name;
+	top_menu->parent	= NULL;
+	top_menu->child		= NULL;
+	top_menu->next		= NULL;
+	top_menu->prev		= NULL;
+	
+	return top_menu;
+	
+	
 	
 	
 		
 }
 
-void menuNode_insert(Menu *topNode, MenuNode *next, MenuNode *prev, MenuNode *parent, MenuNode *child, char* name){
+void menu_insert_submenu(MenuNode *parent, char* name){
 	
 	MenuNode *node = (MenuNode*)malloc(sizeof(MenuNode));
 	
 	node->name = name;
-	node->next = next;
-	node->prev = prev;
+	node->next = NULL;
+	node->prev = NULL;
+	
 	node->parent = parent;
-	node->child = child;
+	parent->child = node;
+	
+	node->child = NULL;
+	
+}
+
+void menu_insert_node(MenuNode* next, MenuNode* prev, char* name){
+	
+	MenuNode *node = (MenuNode*)malloc(sizeof(MenuNode));
+	
+	node->name = name;
+	
+	node->next = next;
+	node->next->prev = node;
+	
+	node->prev = prev;
+	node->prev->next = node;
+	
+	node->parent = prev->parent;
+	
+	node->child = NULL;
 	
 }
 
