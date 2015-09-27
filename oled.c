@@ -10,8 +10,11 @@
 #include "oled.h"
 #include "font5x7.h"
 
+#include <stdio.h>
 
-
+static uint8_t arrow_pos = 2;
+static uint8_t menu_size = 0;
+static MenuNode* current_menu;
 
 void write_c(char command){
 	volatile char * oled_Adress = (volatile char*) 0x1000;
@@ -97,6 +100,19 @@ void OLED_print_arrow(uint8_t row, uint8_t col){
 	
 }
 
+void OLED_move_arrow(uint8_t dir){
+	OLED_pos(arrow_pos, 0x15);
+	OLED_print_string(" ");
+	arrow_pos += (dir - 2) ;
+	if(arrow_pos < 2){
+		arrow_pos = menu_size+1;
+	}
+	if(arrow_pos > menu_size+1){
+		arrow_pos = 2;
+	}
+	OLED_print_arrow(arrow_pos,0x15);
+}
+
 void OLED_pos(uint8_t row, uint8_t col){
 	uint8_t low_col		= (col & (0xf) );					//And-operation between col and 0b1111
 	uint8_t high_col	= ((col >> 4) & (0xf) ) + 0x10;		//Bitwise-shifting, And-Operation, Offset to write to higher column start address
@@ -109,19 +125,55 @@ void OLED_pos(uint8_t row, uint8_t col){
 void OLED_menu(){
 	
 	MenuNode* main_menu = menu_init("Main Menu");
+	current_menu = main_menu;
+
 	
-	menu_insert_submenu(main_menu,"Play Pong!");
-	menu_insert_node(main_menu->child,main_menu->child,"Highscore!");
+	MenuNode* play = menu_insert_submenu(main_menu,"Play Pong");
+	MenuNode* h_score = menu_insert_node(play,play,"Highscore");
+	MenuNode* settings = menu_insert_node(h_score,play, "Settings");
+	MenuNode* excercises = menu_insert_node(h_score,settings, "Run Excercises");
+	
+	MenuNode* ex_sram = menu_insert_submenu(excercises,"Exercise 2: SRAM");
+	MenuNode* ex_adc = menu_insert_node(ex_sram, ex_sram, "Exercise 3: ADC");
 	
 	
+	OLED_print_menu(main_menu);
+
 	
+}
+
+void OLED_print_menu(MenuNode* node){
 	OLED_pos(0, 0);
-	OLED_print_string(main_menu->name);
-	OLED_pos(2, 0x30);
-	OLED_print_string(main_menu->child->name);
-	OLED_pos(4, 0x30);
-	OLED_print_string(main_menu->child->next->name);
-	OLED_pos(6, 0x30);
-	OLED_print_string("Settings");
+	OLED_print_string(node->name);
 	
+	menu_size = node->sub_nodes;
+	
+	MenuNode* curr = node->child;
+	
+	arrow_pos = 2;
+	OLED_print_arrow(arrow_pos,0x15);
+	
+	for (uint8_t i = 2; i < menu_size + 2 ; i++)	 
+	{
+		OLED_pos(i,0x20);
+		OLED_print_string(curr->name);
+		curr= curr->next;
+	} 
+}
+
+void OLED_print_submenu(){
+	OLED_reset();
+	current_menu = menu_move_to_submenu(current_menu,arrow_pos-2);
+	OLED_print_menu(current_menu);
+}
+
+void OLED_print_parentmenu(){
+	
+	if(current_menu->parent == NULL){
+		return;
+	}
+	
+	OLED_reset();
+	current_menu = current_menu->parent;
+	OLED_print_menu(current_menu);
 }
