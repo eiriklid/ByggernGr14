@@ -31,9 +31,9 @@ typedef enum {LEFT, RIGHT, UP, DOWN, NEUTRAL} joy_dir;
 int digital2Prosent(int val);
 int JOY_x_pos();
 int JOY_y_pos();
-int JOY_slider(int slider);
+uint8_t JOY_slider(int slider);
 int JOY_button(int button);  //button=1 left, button=0 right 
-joy_dir JOY_direction(JOY_x_pos, JOY_y_pos);
+joy_dir JOY_direction(int x_pos, int y_pos);
 const char* dir2string( joy_dir dir);
 void JOY_init();
 
