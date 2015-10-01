@@ -9,6 +9,7 @@
 #include <avr/io.h>
 
 #include "joystick.h"
+#include "macros.h"
 
 int digital2Prosent(int val){
 	return (((val*100)/255)-50)*2;
@@ -31,7 +32,7 @@ int JOY_y_pos(){
 	return digital2Prosent(ADC_Adress[0]);	
 }
 
-int JOY_slider(int slider){
+uint8_t JOY_slider(int slider){
 	
 	if (slider == 1)
 	{
@@ -51,20 +52,20 @@ int JOY_slider(int slider){
 	
 }
 
-joy_dir JOY_direction(JOY_x_pos, JOY_y_pos){
-	if( (JOY_x_pos < 5) &&	(JOY_y_pos < 5) && (JOY_x_pos > -5) && (JOY_y_pos > -5)){
+joy_dir JOY_direction(int x_pos, int y_pos){
+	if( (x_pos < 5) &&	(y_pos < 5) && (x_pos > -5) && (y_pos > -5)){
 		return NEUTRAL;
 	}
 	
-	if (JOY_x_pos < JOY_y_pos){
-		if(-JOY_x_pos < JOY_y_pos){
+	if (x_pos < y_pos){
+		if(-x_pos < y_pos){
 			return UP;
 		}
 		return LEFT;
 	}
 	
 	else{
-		if(-JOY_x_pos < JOY_y_pos){
+		if(-x_pos < y_pos){
 			return RIGHT;
 		}
 		return DOWN;
@@ -82,6 +83,7 @@ const char* dir2string( joy_dir dir){
 		case DOWN:	return "DOWN";
 		case UP:	return "UP";
 	}
+	return 0;
 }
 	
 
