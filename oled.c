@@ -7,10 +7,11 @@
 
 
 #include "menu.h"
+#include "font_5x7.h"
 #include "oled.h"
-#include "font5x7.h"
 
 #include <stdio.h>
+#include <string.h>
 
 static uint8_t arrow_pos = 2;
 static uint8_t menu_size = 0;
