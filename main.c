@@ -21,6 +21,9 @@
 #include "sram.h"
 #include "joystick.h"
 #include "oled.h"
+#include "MCP2515.h"
+#include "spi.h"
+
 
 int main(void)
 {
@@ -30,15 +33,18 @@ int main(void)
 	USART_Init(31);
 	
 	MCUCR |= (1 << SRE);
-	fdevopen(USART_Transmit,USART_Receive);
+	fdevopen( USART_Transmit, USART_Receive);
 	//SRAM_test();
 	
 	JOY_init();
+	
+	SPI_MasterInit();
 	
 	OLED_init();
 	OLED_reset();
 	
 	OLED_menu();
+	
 	
 	
     while(1)
@@ -82,11 +88,14 @@ int main(void)
 		
 
 		
+		
+		
 		printf("X er: %d \t Y er: %d \n", JOY_x_pos(),JOY_y_pos());
-		/*
-		printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
+		
+		//printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
 		printf("Direction: %d \n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
-		*/
+		
+		
 		
 		
 		
@@ -107,9 +116,27 @@ int main(void)
 		}
 		
 		
+		
 		/*
 		printf("Left: %d \n",JOY_button(1));
 		printf("Right: %d \n",JOY_button(0));
+		*/
+		
+		
+		
+		
+		//Test for SPI, short circuit MISO & MOSI 
+		/*
+		SPI_send(0x4a);
+		volatile uint8_t i = SPI_read();
+		*/
+		
+		/*
+		mcp2515_reset();
+		
+		mcp2515_write(0x36, 0xAA);
+		
+		printf("CANSTAT  0x%02x \n", mcp2515_read(0x36));
 		*/
 		
 		_delay_ms(50);
