@@ -24,7 +24,7 @@ MenuNode* menu_init(char *name){
 	top_menu->child		= NULL;
 	top_menu->next		= NULL;
 	top_menu->prev		= NULL;
-	top_menu->sub_nodes	= NULL;
+	top_menu->sub_nodes	= 0;
 	
 	return top_menu;	
 }
@@ -42,7 +42,7 @@ MenuNode* menu_insert_submenu(MenuNode *parent, char* name){
 	parent->sub_nodes = 1;
 	
 	node->child = NULL;
-	node->sub_nodes = NULL;
+	node->sub_nodes = 0;
 	return node;
 	
 }
