@@ -23,6 +23,7 @@
 #include "oled.h"
 #include "MCP2515.h"
 #include "spi.h"
+#include "can.h"
 
 
 int main(void)
@@ -45,6 +46,7 @@ int main(void)
 	
 	OLED_menu();
 	
+	CAN_init();
 	
 	
     while(1)
@@ -89,12 +91,12 @@ int main(void)
 
 		
 		
-		
+		/*
 		printf("X er: %d \t Y er: %d \n", JOY_x_pos(),JOY_y_pos());
 		
 		//printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
 		printf("Direction: %d \n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
-		
+		*/
 		
 		
 		
@@ -138,6 +140,30 @@ int main(void)
 		
 		printf("CANSTAT  0x%02x \n", mcp2515_read(0x36));
 		*/
+		
+		//Test for CAN - send & receive msg
+		can_message_t can_msg;
+		
+		can_msg.id = 0b11000101010;
+		can_msg.length = 3;
+		can_msg.data[0] = 4;
+		can_msg.data[1] = 67;
+		can_msg.data[2] = 83;
+		
+		
+		CAN_message_send(&can_msg);
+		
+		//printf("%d \n", mcp2515_read(0x66) );
+		//printf("%d \n", mcp2515_read(0x67) );
+		
+		can_message_t can_receive = CAN_data_receive();
+		
+		printf("ID: %d \n", can_receive.id);
+		printf("%d \n", can_receive.data[0]);
+		printf("%d \n", can_receive.data[1]);
+		printf("%d \n", can_receive.data[2]);
+		
+		
 		
 		_delay_ms(50);
 		clear_bit(PORTB,PB0);
