@@ -157,9 +157,29 @@ Copyright 2003 Kimberly Otten Software Consulting
 
 //Edited by us
 
+// CANCTRL Buffer bits
+
+#define MCP_TXB0SIDH		0x31 
+#define MCP_TXB0SIDL		0x32
+#define MCP_TXB0DLC			0x35
+#define MCP_TXB0D0			0x36
+#define MCP_TXB0D1			0x37
+#define MCP_TXB0D2			0x38
+#define MCP_TXB0D3			0x39
+#define MCP_TXB0D4			0x3A
+#define MCP_TXB0D5			0x3B
+#define MCP_TXB0D6			0x3C
+#define MCP_TXB0D7			0x3D
+
+
+#define MCP_RXB0SIDL		0x62
+#define MCP_RXB0DLC			0x65
+#define MCP_RXB0D0			0x66
+
+uint8_t mcp2515_init();
 uint8_t mcp2515_read(uint8_t address);
 void mcp2515_write(uint8_t address, uint8_t data);
-void mcp2515_request_to_send();											//Sends request to all, can be modified to request specific 
+void mcp2515_request_to_send(uint8_t buffer);								
 uint8_t mcp2515_read_status();
 void mcp2515_bit_modify(uint8_t address, uint8_t mask, uint8_t data);
 void mcp2515_reset();
