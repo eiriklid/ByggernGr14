@@ -5,11 +5,30 @@
  *  Author: solveds
  */ 
 
-
+#include <stdint.h>
 #include <avr/io.h>
 #include "MCP2515.h"
 #include "spi.h"
 #include "macros.h"
+#include <stdio.h>
+
+uint8_t mcp2515_init()
+{
+	
+	SPI_MasterInit(); //Initialize SPI
+	mcp2515_reset(); // Send reset-command
+			
+	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL );
+	
+	
+	
+	return 0;
+}
+
+
+
+
+
 
 
 uint8_t mcp2515_read(uint8_t address){
@@ -42,12 +61,18 @@ void mcp2515_write(uint8_t address, uint8_t data){
 	
 }	
 
-void mcp2515_request_to_send(){
+void mcp2515_request_to_send(uint8_t buffer){
 	
 	SPI_enable();
+	if (buffer > 2)
+	{
+		SPI_send(MCP_RTS_ALL);
+	}
+	else
+	{
+	SPI_send( (0x80)|(1<<buffer) );	
+	}
 	
-	SPI_send(MCP_RTS_ALL); 
-
 	SPI_disable();
 	
 	
