@@ -15,36 +15,22 @@ unsigned char mcp2515_init()
 	pinMode(SS,OUTPUT);
 	mcp2515_reset(); // Send reset-command
 	mcp2515_bit_modify(MCP_RXB0CTRL, 0b01100000, 0b01100000);
-	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, MODE_LOOPBACK );
-	
-	
+	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL );
 
-	
-	
 	return 0;
 }
-
-
-
-
-
-
 
 unsigned char mcp2515_read(unsigned char address)
 {
 	
-	//SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0)); //Slave select low
 	digitalWrite(SS,LOW);
 	
 	SPI.transfer(MCP_READ); //Send read command
 	SPI.transfer(address);
 	
 	unsigned char i = SPI.transfer(0x00);
-	
-	
-	
-	//SPI.endTransaction();
-	digitalWrite(SS,LOW);
+
+	digitalWrite(SS,HIGH);
 	
 	return i;
 	
@@ -52,14 +38,12 @@ unsigned char mcp2515_read(unsigned char address)
 
 void mcp2515_write(unsigned char address, unsigned char data){
 
-	//SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(SS,LOW);
 	
 	SPI.transfer(MCP_WRITE);
 	SPI.transfer(address);
 	SPI.transfer(data);
 
-	//SPI.endTransaction();
 	digitalWrite(SS,HIGH);
 	
 	
@@ -67,7 +51,6 @@ void mcp2515_write(unsigned char address, unsigned char data){
 
 void mcp2515_request_to_send(unsigned char buffer){
 	
-	//SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(SS,LOW);
 	
 	if (buffer > 2)
@@ -79,8 +62,6 @@ void mcp2515_request_to_send(unsigned char buffer){
 		SPI.transfer( (0x80)|(1<<buffer) );
 	}
 	
-	//SPI.endTransaction();
-	
 	digitalWrite(SS,HIGH);
 	
 	
@@ -88,14 +69,12 @@ void mcp2515_request_to_send(unsigned char buffer){
 
 unsigned char mcp2515_read_status(){
 	
-	//SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(SS,LOW);
 	
 	SPI.transfer(MCP_READ_STATUS);
 	
 	unsigned char result = SPI.transfer(0x00);
 
-	//SPI.endTransaction();
 	digitalWrite(SS,HIGH);
 	
 	return result;
@@ -104,7 +83,6 @@ unsigned char mcp2515_read_status(){
 
 void mcp2515_bit_modify(unsigned char address, unsigned char mask, unsigned char data){
 	
-	//SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(SS,LOW);
 	
 	SPI.transfer(MCP_BITMOD);
@@ -112,8 +90,6 @@ void mcp2515_bit_modify(unsigned char address, unsigned char mask, unsigned char
 	SPI.transfer(mask);
 	SPI.transfer(data);
 	
-
-	//SPI.endTransaction();
 	digitalWrite(SS,HIGH);
 
 	
@@ -121,13 +97,11 @@ void mcp2515_bit_modify(unsigned char address, unsigned char mask, unsigned char
 
 void mcp2515_reset(){
 	
-	//SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(SS,LOW);
 	
 	SPI.transfer(MCP_RESET);
 	
-	//SPI.endTransaction();
-	digitalWrite(SS,LOW);
+	digitalWrite(SS,HIGH);
 	
 }
 
