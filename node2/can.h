@@ -11,11 +11,11 @@
 
 typedef struct can_message_t{
 	
-	unsigned int id;
-	unsigned char length;
-	unsigned char data[8];
+	uint8_t id;
+	uint8_t len;
+	uint8_t data[40];
 	
-}can_message_t;
+};
 
 
 void CAN_init();
@@ -24,4 +24,3 @@ can_message_t CAN_data_receive();
 
 
 #endif
-
