@@ -187,7 +187,7 @@ Copyright 2003 Kimberly Otten Software Consulting
 unsigned char mcp2515_init();
 unsigned char mcp2515_read(unsigned char address);
 void mcp2515_write(unsigned char address, unsigned char data);
-void mcp2515_request_to_send(unsigned char buffer);
+void mcp2515_request_to_send(unsigned char buf);
 unsigned char mcp2515_read_status();
 void mcp2515_bit_modify(unsigned char address, unsigned char mask, unsigned char data);
 void mcp2515_reset();
@@ -196,4 +196,3 @@ void mcp2515_reset();
 
 
 #endif
-
