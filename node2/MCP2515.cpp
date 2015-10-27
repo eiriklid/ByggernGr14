@@ -16,6 +16,8 @@ unsigned char mcp2515_init()
 	mcp2515_reset(); // Send reset-command
 	mcp2515_bit_modify(MCP_RXB0CTRL, 0b01100000, 0b01100000);
 	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL );
+  
+  // Fjerne det under?????
   uint8_t retVal = 0;
   retVal = mcp2515_read(MCP_CANCTRL);
   Serial.print("MCP CANCTRL is: ");
