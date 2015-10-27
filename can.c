@@ -34,7 +34,7 @@ void CAN_message_send(can_message_t* can_msg){
 	}
 	
 	mcp2515_request_to_send(0);
-	printf("%02X\n", mcp2515_read(MCP_CANINTF));
+	//printf("%02X\n", mcp2515_read(MCP_CANINTF));
 	
 }
 
@@ -53,7 +53,7 @@ can_message_t CAN_data_receive(){
 	for (uint8_t i = 0; i < return_msg.length; i++){
 		
 		return_msg.data[i] = mcp2515_read(MCP_RXB0D0 + i);
-		printf("%d\n", i);
+		//printf("%d\n", i);
 		
 	}
 	
