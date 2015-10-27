@@ -32,6 +32,21 @@ int JOY_y_pos(){
 	return digital2Prosent(ADC_Adress[0]);	
 }
 
+uint8_t JOY_x_pos_raw(){
+	volatile char * ADC_Adress = (char*) 0x1400;
+	ADC_Adress[0]= 0x05;
+	_delay_ms(1);
+	return ADC_Adress[0];
+}
+
+
+uint8_t JOY_y_pos_raw(){
+	volatile char * ADC_Adress = (char*) 0x1400;
+	ADC_Adress[0]= 0x04;
+	_delay_ms(1);
+	return ADC_Adress[0];
+}
+
 uint8_t JOY_slider(int slider){
 	
 	if (slider == 1)
