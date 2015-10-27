@@ -11,9 +11,9 @@
 
 typedef struct can_message_t{
 	
-	uint8_t id;
+	unsigned int id;
 	uint8_t len;
-	uint8_t data[40];
+	uint8_t data[40]; //endre til 8
 	
 };
 
