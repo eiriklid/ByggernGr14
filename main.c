@@ -24,6 +24,7 @@
 #include "MCP2515.h"
 #include "spi.h"
 #include "can.h"
+#include "joystick_sender.h"
 
 
 int main(void)
@@ -142,19 +143,24 @@ int main(void)
 		*/
 		
 		//Test for CAN - send & receive msg
+		/*
 		can_message_t can_msg;
 		
-		can_msg.id = 0b11000101010;
+		//can_msg.id = 0b11000101010;
+		can_msg.id = 237;
+		
 		can_msg.length = 3;
-		can_msg.data[0] = 4;
-		can_msg.data[1] = 67;
-		can_msg.data[2] = 83;
+		can_msg.data[0] = 24;
+		can_msg.data[1] = 46;
+		can_msg.data[2] = 68;
 		
 		
 		CAN_message_send(&can_msg);
 		
+		
 		//printf("%d \n", mcp2515_read(0x66) );
 		//printf("%d \n", mcp2515_read(0x67) );
+		
 		
 		can_message_t can_receive = CAN_data_receive();
 		
@@ -162,8 +168,9 @@ int main(void)
 		printf("%d \n", can_receive.data[0]);
 		printf("%d \n", can_receive.data[1]);
 		printf("%d \n", can_receive.data[2]);
+		*/
 		
-		
+		JOY_SENDER();
 		
 		_delay_ms(50);
 		clear_bit(PORTB,PB0);
