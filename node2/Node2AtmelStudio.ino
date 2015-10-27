@@ -35,29 +35,27 @@ void loop()
   
   //Test for CAN - send & receive msg
   
-  /*
+      //**** CAN - Send
   can_message_t can_msg;
   
-  can_msg.id = 7;
+  can_msg.id = 1550;
   can_msg.len = 3;
-  can_msg.data[0] = 18;
-  can_msg.data[1] = 4;  
-  can_msg.data[2] = 9;
+  can_msg.data[0] = 250;
+  can_msg.data[1] = 53;  
+  can_msg.data[2] = 99;
 
-   
   CAN_message_send(&can_msg);
+
+      //****  CAN - Send - End
   
-*/
   
   delay(100);
   
-  
+      //**** CAN - Receive
   can_message_t can_receive; 
-  can_receive.len = 0;
-  
   
   can_receive= CAN_data_receive();
-  Serial.println("Point 2");
+  
   
 
   Serial.print("\nID:\t ");
@@ -65,16 +63,17 @@ void loop()
 
   Serial.print("\nLenght:\t  ");
   Serial.print(can_receive.len);
+  int i;
+  Serial.print("\nData: \n");
   
-  Serial.print("\nData:\t");
-  Serial.print(can_receive.data[0]);
-  
-  Serial.print("\n\t");
-  Serial.print(can_receive.data[1]);
-  
-  Serial.print("\n\t");
-  Serial.print(can_receive.data[2]);
-  
+  for(i = 0 ; i <  can_receive.len ; i++){
+    Serial.print(can_receive.data[i]);
+    Serial.print("\n");
+    
+  }
+    
+
+      //**** CAN - Receive - END
   
   /*
   Serial.print("\n\n");
@@ -82,6 +81,5 @@ void loop()
   */
   
   delay(100);
-  Serial.println("\n Point 3");
-  Serial.println("Point 4");
+ 
 }
