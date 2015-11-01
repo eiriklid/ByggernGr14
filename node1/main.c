@@ -30,73 +30,47 @@
 int main(void)
 {
 	
+	set_bit(DDRB,PB0); //blinking LED
 	
-	DDRB |= (1<<PB0);
-	USART_Init(31);
+	// -----------UART & printf-----------------
+	UART_Init(31);
+	fdevopen( UART_Transmit, UART_Receive); //Enable printf with UART
 	
-	MCUCR |= (1 << SRE);
-	fdevopen( USART_Transmit, USART_Receive);
-	//SRAM_test();
+	// -----------SRAM-----------------
+	set_bit(MCUCR,SRE); //Enable External SRAM in MCU Control Register
 	
+	// -----------Joystick-----------------
 	JOY_init();
 	
-	SPI_MasterInit();
 	
 	OLED_init();
 	OLED_reset();
-	
 	OLED_menu();
 	
+	SPI_MasterInit();	
 	CAN_init();
 	
 	
     while(1)
     {
-		set_bit(PORTB,PB0);
+		set_bit(PORTB,PB0); //blinking LED
 		
 		
-        //Output-test ex.1
-		/*
-		PORTA |=(1<<PA0);
-		_delay_ms(500);              
-		PORTA &= ~(1<<PA0);
-		_delay_ms(500);              
-		*/
+		// -----------Ex.1-----------------
 		
-		// ex.1
-		/*
-		//USART_Transmit('a');
-		usart_char = USART_Receive();
-		USART_Transmit(usart_char);
-		*/
+		//printf("Exercise 1 is working properly! :D \n");
 		
-		//ex.2
-		/*
-		clear_bit(PORTE,PE1);
-		set_bit(PORTA,PA0);
-		set_bit(PORTE,PE1);		
-		_delay_ms(500);
 		
-		clear_bit(PORTE,PE1);
-		set_bit(PORTA,PA1);
-		set_bit(PORTE,PE1);
-		_delay_ms(500);
-		
-		clear_bit(PORTE,PE1);
-		clear_bit(PORTA,PA0);
-		clear_bit(PORTA,PA1);
-		set_bit(PORTE,PE1);
-		_delay_ms(500);
-		*/
-		
+		// -----------Ex.2-----------------
+		// SRAM_test();
 
 		
 		
+		// -----------Ex.3-----------------
 		/*
 		printf("X er: %d \t Y er: %d \n", JOY_x_pos(),JOY_y_pos());
-		
-		//printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
-		printf("Direction: %d \n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
+		printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
+		printf("Direction: %d \n\n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
 		*/
 		
 		
@@ -173,7 +147,7 @@ int main(void)
 		JOY_SENDER();
 		
 		_delay_ms(50);
-		clear_bit(PORTB,PB0);
+		clear_bit(PORTB,PB0); //blinking LED
 		_delay_ms(50);
     }
 }
