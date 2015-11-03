@@ -3,14 +3,19 @@
 
 #include "Arduino.h"
 #include "SPI.h"
+#include "Servo.h"
 
+Servo myservo;
 
 void setup()
 {
   Serial.begin(9600);
   CAN_init();
   Serial.println("Reboot"); 
-
+  
+  myservo.attach(9,900, 2100); //Maybe check if servo.attached
+  myservo.write(90);    //Set servo to mid-point
+  
 }
 
 void loop()
@@ -79,6 +84,8 @@ void loop()
   Serial.print("\n\n");
   Serial.println(mcp2515_read(MCP_CANINTF), BIN);
   */
+
+  myservo.write(can_receive.data[1]*0.7);
   
   delay(100);
  
