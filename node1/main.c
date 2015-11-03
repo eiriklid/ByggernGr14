@@ -16,7 +16,7 @@
 #include <stdio.h>
 
 
-#include "usart.h"
+#include "uart.h"
 #include "macros.h"
 #include "sram.h"
 #include "joystick.h"
@@ -75,6 +75,8 @@ int main(void)
 		
 		
 		
+		//Menu-arrow
+		/*
 		
 		joy_dir direction = JOY_direction(JOY_x_pos(), JOY_y_pos());
 		if (direction == DOWN){
@@ -95,7 +97,7 @@ int main(void)
 			OLED_print_parentmenu();
 			_delay_ms(50);
 		}
-		
+		*/
 		
 		
 		/*
