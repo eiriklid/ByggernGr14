@@ -211,7 +211,7 @@ void loop()
  
   digitalWrite(A7, LOW); // !OE low
   digitalWrite(A5, LOW); // get high byte
-  delay(20);
+  delay(20); //is this microseconds?
   //msb = PINK ;
   //Serial.println("PINK");
   //Serial.println(msb, BIN);
@@ -224,7 +224,7 @@ void loop()
   msb +=digitalRead(DO1)<<1;
   msb +=digitalRead(DO0);
   digitalWrite(A5, HIGH); // get low byte
-  delay(20);
+  delay(20); //is this microseconds?
   //lsb = PINK;
   //Serial.println(lsb, BIN);
  
