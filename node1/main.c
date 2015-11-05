@@ -151,7 +151,7 @@ int main(void)
 		*/
 		
 		JOY_SENDER();
-		
+		printf("%d \n", JOY_button(0));
 		_delay_ms(50);
 		clear_bit(PORTB,PB0); //blinking LED
 		_delay_ms(50);
