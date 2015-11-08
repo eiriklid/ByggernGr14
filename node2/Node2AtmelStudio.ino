@@ -8,6 +8,7 @@
 
 
 Servo myservo;
+unsigned int i = 0;
 
 //--- PWM------------
 #define PWM_pin 9
@@ -26,7 +27,7 @@ int lives = 3;
 unsigned long start_time;
 #define Bounce_delay 500
 
-//--- Wire------------
+//--- Motor------------
 #define DIR_pin A3
 #define MOTOR_ENABLE A4
 int dir_val = 0;
@@ -41,14 +42,21 @@ int dir_val = 0;
 #define DO6 A9
 #define DO7 A8
 
-unsigned long msb = 0;
-unsigned long lsb = 0;
+unsigned int msb = 0;
+unsigned int lsb = 0;
+int16_t encoder_data = 0;
 
 //-----Solenoid-----------
 #define SOLENOID_pin A1
 
+//----PI(D)- regulator-------
 
+float K_p = 1;
+float K_i = 0.05;
 
+int16_t error = 0;
+int32_t error_integral = 0;
+int16_t pid_val = 0;
 void setup()
 {
   Serial.begin(9600);
@@ -64,21 +72,12 @@ void setup()
   pinMode(IR_pin, INPUT);
   pinMode(DIR_pin, OUTPUT);
   pinMode(MOTOR_ENABLE, OUTPUT);
+  
   pinMode(A7, OUTPUT); // !OE
   pinMode(A6, OUTPUT); // !RES
   pinMode(A5, OUTPUT); // SEL
-  pinMode(DO7, INPUT); 
-  pinMode(DO6, INPUT); 
-  pinMode(DO5, INPUT); 
-  pinMode(DO4, INPUT); 
-  pinMode(DO3, INPUT); 
-  pinMode(DO2, INPUT); 
-  pinMode(DO1, INPUT); 
-  pinMode(DO0, INPUT); 
   
-  
-
-
+  digitalWrite(A6, LOW); // !Reset encoder
   
   pinMode(SOLENOID_pin, OUTPUT);
   
@@ -86,7 +85,7 @@ void setup()
 
 void loop()
 {
-  
+  encoder_data = 0;
   /*
   SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
   
@@ -153,33 +152,36 @@ void loop()
   Serial.println(mcp2515_read(MCP_CANINTF), BIN);
   */
 
-  myservo.write(can_receive.data[1]*0.7); //180/255 = 0.7
+  myservo.write( map(can_receive.data[1], 0, 255, 0, 180) ); 
 
   IR_val = analogRead(IR_pin);    // read the input pin
   //Serial.println(IR_val);
   
   if( ( (IR_val) < 20) && !(game_over) && (millis() > (start_time + Bounce_delay) ) ){   
     lives--;
-    Serial.println(lives);
+    //Serial.println(lives);
     start_time = millis();
     
   }
   else{
     if (!(lives)){
       game_over = 1;
-      Serial.print("Game Over! \n");
+     // Serial.print("Game Over! \n");
       
       }
     }
 
-  //-----Wire-----------
+  //-----Motor-----------
   //Burde legge inn buffer som konstanter
-  
+  /*
   if( (can_receive.data[0]< 127) || (can_receive.data[0] > 131) ){
     if(can_receive.data[0] > 131){
         dir_val =( (can_receive.data[0]-130));  //Trekker fra offset og multipliserer med 2
+        
         Serial.print("Hoyre: "); 
         Serial.println(dir_val);
+        
+        
         digitalWrite(DIR_pin, HIGH);
         digitalWrite(MOTOR_ENABLE, HIGH);
 
@@ -190,8 +192,10 @@ void loop()
       }
       else{
         dir_val =( (0x7F - can_receive.data[0]));  //Inverterer verdi og multipliserer med 2
+        /*
         Serial.print("Venstre: "); 
         Serial.println(dir_val);
+        
         digitalWrite(DIR_pin, LOW);
         digitalWrite(MOTOR_ENABLE, HIGH);
 
@@ -205,47 +209,33 @@ void loop()
   else{
     digitalWrite(MOTOR_ENABLE, LOW);
     }
-
+    */
   //-----Encoder--------------
   digitalWrite(A6, HIGH); // !Reset encoder
- 
   digitalWrite(A7, LOW); // !OE low
   digitalWrite(A5, LOW); // get high byte
-  delay(20); //is this microseconds?
-  //msb = PINK ;
-  //Serial.println("PINK");
-  //Serial.println(msb, BIN);
-  msb = digitalRead(DO7)<<7; // legge inn for-løkke
-  msb +=digitalRead(DO6)<<6;
-  msb +=digitalRead(DO5)<<5;
-  msb +=digitalRead(DO4)<<4;
-  msb +=digitalRead(DO3)<<3;
-  msb +=digitalRead(DO2)<<2;
-  msb +=digitalRead(DO1)<<1;
-  msb +=digitalRead(DO0);
-  digitalWrite(A5, HIGH); // get low byte
-  delay(20); //is this microseconds?
-  //lsb = PINK;
-  //Serial.println(lsb, BIN);
- 
-  lsb = digitalRead(DO7)<<7;
   
-  lsb +=digitalRead(DO6)<<6;
-  lsb +=digitalRead(DO5)<<5;
-  lsb +=digitalRead(DO4)<<4;
-  lsb +=digitalRead(DO3)<<3;
-  lsb +=digitalRead(DO2)<<2;
-  lsb +=digitalRead(DO1)<<1;
-  lsb +=digitalRead(DO0);
-  digitalWrite(A6, LOW); // !Reset encoder
+  delayMicroseconds(20); 
+  msb = PINK ;
+  
+  digitalWrite(A5, HIGH); // get low byte
+  delayMicroseconds(20); //is this microseconds?
+  lsb = PINK;
+  
+  for(i = 0; i <8; i++){
+    
+    if(msb & (1 << i)){
+       
+      encoder_data += (1 << (15-i));
+    }
+    if(lsb & (1 << i)){
+      
+      encoder_data += (1 << (7-i));
+    }
+  }
   
   digitalWrite(A7, HIGH); // !OE high
-  
-  Serial.print("Data \n");
-  //Serial.println(msb, BIN);
-  msb = (msb<<8)+lsb ;    //dette blir encoder output
-  //Serial.println(msb, BIN);
-  Serial.println(lsb, BIN);
+  //Serial.println(encoder_data);
 
   //-----Solenoid-----------
   
@@ -257,10 +247,47 @@ void loop()
     digitalWrite(SOLENOID_pin, HIGH);
   }
   
+  
+  
+  
+
+  //----PI(D)- regulator-------
+
+  error = can_receive.data[0] - map( encoder_data, 0, 10000, 255, 0);
+  error_integral += error;
+
+  pid_val = K_p* error + K_i* error_integral;
+  Serial.print("\n\n Ref: ");
+  Serial.println(can_receive.data[0]);
+  Serial.print("error: ");
+  Serial.println(error);
+  Serial.print("Integral: ");
+  Serial.println(error_integral);
+  Serial.print("Output: ");
+  Serial.print(pid_val);
+
+  if(pid_val < 0){
+        digitalWrite(DIR_pin, LOW);
+        digitalWrite(MOTOR_ENABLE, HIGH);
+
+        Wire.beginTransmission(0b0101000);
+        Wire.write(byte(0x00));
+        Wire.write( -pid_val);
+        Wire.endTransmission();
+  }
+  else{
+        digitalWrite(DIR_pin, HIGH);
+        digitalWrite(MOTOR_ENABLE, HIGH);
+
+        Wire.beginTransmission(0b0101000);
+        Wire.write(byte(0x00));
+        Wire.write( pid_val );
+        Wire.endTransmission();
+  }
+  
 
   
-    
 
-  delay(20);
- 
 }
+
+
