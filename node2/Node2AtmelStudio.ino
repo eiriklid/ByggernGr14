@@ -10,6 +10,10 @@
 Servo myservo;
 unsigned int i = 0;
 
+//--- CAN------------
+#define RX0BF_pin 2
+can_message_t can_receive; 
+
 //--- PWM------------
 #define PWM_pin 9
 #define PWM_min 900
@@ -60,6 +64,7 @@ int16_t pid_val = 0;
 void setup()
 {
   Serial.begin(9600);
+  pinMode(RX0BF_pin, INPUT);
   CAN_init();
   Serial.println("Reboot"); 
   Wire.begin();
@@ -108,11 +113,11 @@ void loop()
       //**** CAN - Send
   can_message_t can_msg;
   
-  can_msg.id = 1550;
+  can_msg.id = 155;
   can_msg.len = 3;
-  can_msg.data[0] = 250;
-  can_msg.data[1] = 53;  
-  can_msg.data[2] = 99;
+  can_msg.data[0] = 25;
+  can_msg.data[1] = 70;  
+  can_msg.data[2] = 9;
 
   CAN_message_send(&can_msg);
 
@@ -122,9 +127,13 @@ void loop()
   delay(20);
   
       //**** CAN - Receive
-  can_message_t can_receive; 
+  if(digitalRead(RX0BF_pin) == 0){
+    Serial.println("CAN");
+    
   
-  can_receive= CAN_data_receive();
+    can_receive= CAN_data_receive();
+  }
+  
   
   
   //----- Print Can message received-----
@@ -257,6 +266,7 @@ void loop()
   error_integral += error;
 
   pid_val = K_p* error + K_i* error_integral;
+  /*
   Serial.print("\n\n Ref: ");
   Serial.println(can_receive.data[0]);
   Serial.print("error: ");
@@ -265,7 +275,7 @@ void loop()
   Serial.println(error_integral);
   Serial.print("Output: ");
   Serial.print(pid_val);
-
+*/
   if(pid_val < 0){
         digitalWrite(DIR_pin, LOW);
         digitalWrite(MOTOR_ENABLE, HIGH);
@@ -289,5 +299,4 @@ void loop()
   
 
 }
-
 
