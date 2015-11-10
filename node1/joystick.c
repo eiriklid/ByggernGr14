@@ -20,7 +20,9 @@ int digital2Prosent(int val){
 int JOY_x_pos(){
 	volatile char * ADC_Adress = (char*) 0x1400;
 	ADC_Adress[0]= 0x05; 
-	_delay_ms(1); 
+	
+	while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
+		 
 	return digital2Prosent(ADC_Adress[0]);
 }
 
@@ -28,14 +30,14 @@ int JOY_x_pos(){
 int JOY_y_pos(){
 	volatile char * ADC_Adress = (char*) 0x1400;
 	ADC_Adress[0]= 0x04;
-	_delay_ms(1);
+	while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
 	return digital2Prosent(ADC_Adress[0]);	
 }
 
 uint8_t JOY_x_pos_raw(){
 	volatile char * ADC_Adress = (char*) 0x1400;
 	ADC_Adress[0]= 0x05;
-	_delay_ms(1);
+	while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
 	return ADC_Adress[0];
 }
 
@@ -43,7 +45,7 @@ uint8_t JOY_x_pos_raw(){
 uint8_t JOY_y_pos_raw(){
 	volatile char * ADC_Adress = (char*) 0x1400;
 	ADC_Adress[0]= 0x04;
-	_delay_ms(1);
+	while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
 	return ADC_Adress[0];
 }
 
@@ -53,7 +55,7 @@ uint8_t JOY_slider(int slider){
 	{
 		volatile char * ADC_Adress = (char*) 0x1400;
 		ADC_Adress[0]= 0x06;
-		_delay_ms(1);
+		while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
 		return ADC_Adress[0];
 		
 	} 
@@ -61,7 +63,7 @@ uint8_t JOY_slider(int slider){
 	{
 		volatile char * ADC_Adress = (char*) 0x1400;
 		ADC_Adress[0]= 0x07;
-		_delay_ms(1);
+		while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
 		return ADC_Adress[0];
 	}
 	
