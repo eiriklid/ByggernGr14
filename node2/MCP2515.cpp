@@ -16,6 +16,7 @@ unsigned char mcp2515_init()
 	mcp2515_reset(); // Send reset-command
 	mcp2515_bit_modify(MCP_RXB0CTRL, 0b01100000, 0b01100000);
 	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL );
+  mcp2515_bit_modify(MCP_BFPCTRL, 0b00000101, 0b00000101);
   
   // Fjerne det under?????
   uint8_t retVal = 0;
