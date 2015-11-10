@@ -5,7 +5,6 @@
  *  Author: eiriklid
  */ 
 
-#include <util/delay.h>
 #include <avr/io.h>
 
 #include "joystick.h"
