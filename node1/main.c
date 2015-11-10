@@ -42,7 +42,7 @@ int main(void)
 	// -----------Joystick-----------------
 	JOY_init();
 	
-	
+	// -----------OLED-----------------
 	OLED_init();
 	OLED_reset();
 	OLED_menu_init();
@@ -62,7 +62,7 @@ int main(void)
 		
 		
 		// -----------Ex.2-----------------
-		// SRAM_test();
+		//SRAM_test();
 
 		
 		
@@ -72,7 +72,6 @@ int main(void)
 		printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
 		printf("Direction: %d \n\n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
 		*/
-		
 		
 		
 		//Menu-arrow
@@ -141,6 +140,8 @@ int main(void)
 		//printf("%d \n", mcp2515_read(0x66) );
 		//printf("%d \n", mcp2515_read(0x67) );
 		
+		*/
+		if( !((PIND & (1<< PD2)) == (1<<PD2)) ){ // Venter på lav på Interrupt
 		
 		can_message_t can_receive = CAN_data_receive();
 		
@@ -148,7 +149,7 @@ int main(void)
 		printf("%d \n", can_receive.data[0]);
 		printf("%d \n", can_receive.data[1]);
 		printf("%d \n", can_receive.data[2]);
-		*/
+		}
 		
 		JOY_SENDER();
 		printf("%d \n", JOY_button(0));
