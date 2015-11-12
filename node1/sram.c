@@ -12,7 +12,7 @@
 
 void SRAM_test(void)
 {
-	volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
+	volatile uint8_t *ext_ram = (uint8_t *) 0x1800; // Start address for the SRAM
 	uint16_t ext_ram_size       = 0x800;
 	uint16_t write_errors       = 0;
 	uint16_t retrieval_errors   = 0;

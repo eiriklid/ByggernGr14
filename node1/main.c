@@ -14,9 +14,10 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
+#include <avr/interrupt.h>
 
-
-#include "usart.h"
+#include "led.h"
+#include "uart.h"
 #include "macros.h"
 #include "sram.h"
 #include "joystick.h"
@@ -29,93 +30,73 @@
 
 int main(void)
 {
+	led_init();
+	ISR(TIMER0_OVF_vect);
+	// -----------UART & printf-----------------
+	UART_Init(31);
+	fdevopen( UART_Transmit, UART_Receive); //Enable printf with UART
 	
+	// -----------SRAM-----------------
+	set_bit(MCUCR,SRE); //Enable External SRAM in MCU Control Register
 	
-	DDRB |= (1<<PB0);
-	USART_Init(31);
-	
-	MCUCR |= (1 << SRE);
-	fdevopen( USART_Transmit, USART_Receive);
-	//SRAM_test();
-	
+	// -----------Joystick-----------------
 	JOY_init();
 	
-	SPI_MasterInit();
-	
+	// -----------OLED-----------------
 	OLED_init();
 	OLED_reset();
+	OLED_menu_init();
 	
-	OLED_menu();
-	
+	SPI_MasterInit();	
 	CAN_init();
 	
 	
     while(1)
     {
-		set_bit(PORTB,PB0);
 		
 		
-        //Output-test ex.1
-		/*
-		PORTA |=(1<<PA0);
-		_delay_ms(500);              
-		PORTA &= ~(1<<PA0);
-		_delay_ms(500);              
-		*/
 		
-		// ex.1
-		/*
-		//USART_Transmit('a');
-		usart_char = USART_Receive();
-		USART_Transmit(usart_char);
-		*/
+		// -----------Ex.1-----------------
 		
-		//ex.2
-		/*
-		clear_bit(PORTE,PE1);
-		set_bit(PORTA,PA0);
-		set_bit(PORTE,PE1);		
-		_delay_ms(500);
+		//printf("Exercise 1 is working properly! :D \n");
 		
-		clear_bit(PORTE,PE1);
-		set_bit(PORTA,PA1);
-		set_bit(PORTE,PE1);
-		_delay_ms(500);
 		
-		clear_bit(PORTE,PE1);
-		clear_bit(PORTA,PA0);
-		clear_bit(PORTA,PA1);
-		set_bit(PORTE,PE1);
-		_delay_ms(500);
-		*/
-		
+		// -----------Ex.2-----------------
+		//SRAM_test();
 
 		
 		
+		// -----------Ex.3-----------------
 		/*
 		printf("X er: %d \t Y er: %d \n", JOY_x_pos(),JOY_y_pos());
-		
-		//printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
-		printf("Direction: %d \n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
+		printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
+		printf("Direction: %d \n\n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
 		*/
 		
 		
+		//Menu-arrow
 		
 		
 		joy_dir direction = JOY_direction(JOY_x_pos(), JOY_y_pos());
 		if (direction == DOWN){
 			OLED_move_arrow(3);
+			_delay_ms(250);
 			
 		}
 		if (direction == UP){			
 			OLED_move_arrow(1);
+			_delay_ms(250);
 
 		}
 		if (direction == RIGHT){
 			OLED_print_submenu();
+			_delay_ms(250);
+			
 		}
 		if (direction == LEFT){
 			OLED_print_parentmenu();
+			_delay_ms(250);
+
 		}
 		
 		
@@ -161,6 +142,8 @@ int main(void)
 		//printf("%d \n", mcp2515_read(0x66) );
 		//printf("%d \n", mcp2515_read(0x67) );
 		
+		*/
+		if( !((PIND & (1<< PD2)) == (1<<PD2)) ){ // Venter på lav på Interrupt
 		
 		can_message_t can_receive = CAN_data_receive();
 		
@@ -168,12 +151,9 @@ int main(void)
 		printf("%d \n", can_receive.data[0]);
 		printf("%d \n", can_receive.data[1]);
 		printf("%d \n", can_receive.data[2]);
-		*/
+		}
 		
 		JOY_SENDER();
-		
-		_delay_ms(50);
-		clear_bit(PORTB,PB0);
-		_delay_ms(50);
+		printf("%d \n", JOY_button(0));
     }
 }
