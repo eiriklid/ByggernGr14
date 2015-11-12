@@ -75,28 +75,30 @@ int main(void)
 		
 		
 		//Menu-arrow
-		/*
+		
 		
 		joy_dir direction = JOY_direction(JOY_x_pos(), JOY_y_pos());
 		if (direction == DOWN){
 			OLED_move_arrow(3);
-			_delay_ms(50);
+			_delay_ms(250);
 			
 		}
 		if (direction == UP){			
 			OLED_move_arrow(1);
-			_delay_ms(50);	
+			_delay_ms(250);
 
 		}
 		if (direction == RIGHT){
 			OLED_print_submenu();
-			_delay_ms(50);
+			_delay_ms(250);
+			
 		}
 		if (direction == LEFT){
 			OLED_print_parentmenu();
-			_delay_ms(50);
+			_delay_ms(250);
+
 		}
-		*/
+		
 		
 		
 		/*
