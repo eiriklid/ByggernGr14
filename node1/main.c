@@ -14,8 +14,9 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
+#include <avr/interrupt.h>
 
-
+#include "led.h"
 #include "uart.h"
 #include "macros.h"
 #include "sram.h"
@@ -29,9 +30,8 @@
 
 int main(void)
 {
-	
-	set_bit(DDRB,PB0); //blinking LED
-	
+	led_init();
+	ISR(TIMER0_OVF_vect);
 	// -----------UART & printf-----------------
 	UART_Init(31);
 	fdevopen( UART_Transmit, UART_Receive); //Enable printf with UART
@@ -53,7 +53,7 @@ int main(void)
 	
     while(1)
     {
-		set_bit(PORTB,PB0); //blinking LED
+		
 		
 		
 		// -----------Ex.1-----------------
@@ -153,8 +153,5 @@ int main(void)
 		
 		JOY_SENDER();
 		printf("%d \n", JOY_button(0));
-		_delay_ms(50);
-		clear_bit(PORTB,PB0); //blinking LED
-		_delay_ms(50);
     }
 }
