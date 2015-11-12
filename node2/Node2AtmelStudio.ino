@@ -37,14 +37,6 @@ unsigned long start_time;
 int dir_val = 0;
 
 //----Encoder------------
-#define DO0 A15
-#define DO1 A14
-#define DO2 A13
-#define DO3 A12
-#define DO4 A11
-#define DO5 A10
-#define DO6 A9
-#define DO7 A8
 
 unsigned int msb = 0;
 unsigned int lsb = 0;
@@ -55,12 +47,24 @@ int16_t encoder_data = 0;
 
 //----PI(D)- regulator-------
 
-float K_p = 1;
-float K_i = 0.05;
+float K_p = 0.7;
+float K_i = 0.001;
+float K_d = 3;
 
 int16_t error = 0;
+int16_t last_error = 0;
 int32_t error_integral = 0;
+float d_error = 0;
 int16_t pid_val = 0;
+
+#define min_out = 70;
+#define max_out = 120;
+
+#define sample_time 20
+uint32_t current_time = 0;
+uint32_t last_sample_time = 0;
+uint32_t time_difference = 0;
+
 void setup()
 {
   Serial.begin(9600);
@@ -81,6 +85,24 @@ void setup()
   pinMode(A7, OUTPUT); // !OE
   pinMode(A6, OUTPUT); // !RES
   pinMode(A5, OUTPUT); // SEL
+  
+  //-----Encoder calibration---------
+  uint16_t cal_time = millis();
+  while( (millis()- cal_time )< 500){
+        digitalWrite(DIR_pin, HIGH);
+        digitalWrite(MOTOR_ENABLE, HIGH);
+
+        Wire.beginTransmission(0b0101000);
+        Wire.write(byte(0x00));
+        Wire.write(0xD0);
+        Wire.endTransmission();
+        
+  }
+  
+  Wire.beginTransmission(0b0101000);
+  Wire.write(byte(0x00));
+  Wire.write(0x00);
+  Wire.endTransmission();       
   
   digitalWrite(A6, LOW); // !Reset encoder
   
@@ -123,14 +145,11 @@ void loop()
 
       //****  CAN - Send - End
   
-  
-  delay(20);
+ 
   
       //**** CAN - Receive
   if(digitalRead(RX0BF_pin) == 0){
-    Serial.println("CAN");
     
-  
     can_receive= CAN_data_receive();
   }
   
@@ -175,7 +194,7 @@ void loop()
   else{
     if (!(lives)){
       game_over = 1;
-     // Serial.print("Game Over! \n");
+     Serial.print("Game Over! \t");
       
       }
     }
@@ -187,7 +206,7 @@ void loop()
     if(can_receive.data[0] > 131){
         dir_val =( (can_receive.data[0]-130));  //Trekker fra offset og multipliserer med 2
         
-        Serial.print("Hoyre: "); 
+        Serial.print("\t Hoyre: \t"); 
         Serial.println(dir_val);
         
         
@@ -201,8 +220,8 @@ void loop()
       }
       else{
         dir_val =( (0x7F - can_receive.data[0]));  //Inverterer verdi og multipliserer med 2
-        /*
-        Serial.print("Venstre: "); 
+        
+        Serial.print("\t Venstre: \t"); 
         Serial.println(dir_val);
         
         digitalWrite(DIR_pin, LOW);
@@ -218,7 +237,7 @@ void loop()
   else{
     digitalWrite(MOTOR_ENABLE, LOW);
     }
-    */
+*/    
   //-----Encoder--------------
   digitalWrite(A6, HIGH); // !Reset encoder
   digitalWrite(A7, LOW); // !OE low
@@ -261,27 +280,57 @@ void loop()
   
 
   //----PI(D)- regulator-------
-
-  error = can_receive.data[0] - map( encoder_data, 0, 10000, 255, 0);
-  error_integral += error;
-
-  pid_val = K_p* error + K_i* error_integral;
-  /*
-  Serial.print("\n\n Ref: ");
-  Serial.println(can_receive.data[0]);
-  Serial.print("error: ");
-  Serial.println(error);
-  Serial.print("Integral: ");
-  Serial.println(error_integral);
-  Serial.print("Output: ");
-  Serial.print(pid_val);
-*/
-  if(pid_val < 0){
+  
+  
+ 
+  current_time = millis();
+  time_difference = current_time -last_sample_time;
+  if(time_difference >= sample_time){
+    Serial.print(time_difference);
+    error = can_receive.data[5] - map( encoder_data, 0, 10000, 255, 0);
+    
+    if(time_difference > 200){    //for å fjerne feil tid på første måling 
+      Serial.println("TIME FAIL!!!!!!!!");
+       
+    }
+    else{
+    error_integral += (error*time_difference);
+    d_error = (float)(error - last_error)/time_difference;
+    pid_val = K_p* error + K_i* error_integral + (int16_t)(K_d*d_error) ;    
+    }
+    
+    last_error = error;
+    last_sample_time = current_time;
+  }
+  
+/*
+  Serial.print("Encoder:\t");
+  Serial.print(encoder_data);
+  Serial.print("\t Encoder_map:\t");
+  Serial.print(map( encoder_data, 0, 10000, 255, 0));
+  */
+  
+  Serial.print("\tRef: \t");
+  Serial.print(can_receive.data[5]);
+  Serial.print("\terror: \t");
+  Serial.print(error);
+  Serial.print("\tK_P error: \t");
+  Serial.print(K_p*error);
+  Serial.print("\tIntegral: \t");
+  Serial.print(K_i*error_integral);
+  Serial.print("\tDerivative: \t");
+  Serial.print(K_d*d_error,6);
+  Serial.print("\t Output: ");
+  Serial.println(pid_val);
+  
+  
+  if(time_difference < 200){
+    if(pid_val < 0){
         digitalWrite(DIR_pin, LOW);
         digitalWrite(MOTOR_ENABLE, HIGH);
 
         Wire.beginTransmission(0b0101000);
-        Wire.write(byte(0x00));
+        Wire.write( byte(0x00));
         Wire.write( -pid_val);
         Wire.endTransmission();
   }
@@ -294,9 +343,10 @@ void loop()
         Wire.write( pid_val );
         Wire.endTransmission();
   }
+  }
+  
   
 
   
 
 }
-
