@@ -19,8 +19,7 @@ typedef struct MenuNode {
 	
 	
 	char* name;
-	unsigned int sub_nodes;
-	//struct MenuNode* (*menu_func) (struct MenuNode* node, int it); //might be unnecessary 
+	unsigned int sub_nodes; 
 	void (*node_func)();
 	
 } MenuNode;
