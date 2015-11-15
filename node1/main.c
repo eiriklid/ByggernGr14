@@ -30,6 +30,7 @@
 
 int main(void)
 {
+	// -----------Blinking Led--------------------
 	led_init();
 	ISR(TIMER0_OVF_vect);
 	// -----------UART & printf-----------------
@@ -47,12 +48,16 @@ int main(void)
 	OLED_reset();
 	OLED_menu_init();
 	
+	// -----------CAN-----------------
 	SPI_MasterInit();	
 	CAN_init();
 	
 	
+	printf("Initialization Complete \n");
+	
+	
     while(1)
-    {
+    { 
 		
 		
 		
@@ -67,8 +72,9 @@ int main(void)
 		
 		
 		// -----------Ex.3-----------------
-		/*
+		/*	
 		printf("X er: %d \t Y er: %d \n", JOY_x_pos(),JOY_y_pos());
+		
 		printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
 		printf("Direction: %d \n\n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
 		*/
@@ -78,6 +84,7 @@ int main(void)
 		
 		
 		joy_dir direction = JOY_direction(JOY_x_pos(), JOY_y_pos());
+		
 		if (direction == DOWN){
 			OLED_move_arrow(3);
 			_delay_ms(250);
@@ -153,7 +160,7 @@ int main(void)
 		printf("%d \n", can_receive.data[2]);
 		}
 		
-		JOY_SENDER();
-		printf("%d \n", JOY_button(0));
+		//JOY_SENDER();
+		//printf("%d \n", JOY_button(0));
     }
 }
