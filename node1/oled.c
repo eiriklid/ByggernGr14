@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "font_5x7.h"
 #include "oled.h"
+#include "joystick.h" //Included for slider and button in OLED_addjust_brightness
 
 #include <stdio.h>
 #include <string.h>
@@ -186,8 +187,8 @@ void OLED_print_menu(MenuNode* node){
 
 void OLED_print_submenu(){
 	OLED_slide_line(arrow_pos);
+	current_menu = menu_run_node_func(current_menu,arrow_pos-2);	
 	OLED_reset();
-	current_menu = menu_move_to_submenu(current_menu,arrow_pos-2);
 	OLED_print_menu(current_menu);
 }
 
@@ -222,7 +223,8 @@ void OLED_slide_line(uint8_t row){
 	uint8_t count = 250;
 	do 
 	{
-		printf("Sliding!"); // FINN EN BEDRE MÅTE Å ITERERE PÅ
+		
+		//printf("Sliding!"); // FINN EN BEDRE MÅTE Å ITERERE PÅ
 	} while (--count);
 	
 	
@@ -230,3 +232,13 @@ void OLED_slide_line(uint8_t row){
 		
 	
 }
+
+void OLED_addjust_brightness(){
+	while(!JOY_button(1)){
+		write_c(0x81);
+		write_c(JOY_slider(1));
+		
+	}
+	
+}
+
