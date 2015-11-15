@@ -14,25 +14,6 @@ int digital2Prosent(int val){
 	return (((val*100)/255)-50)*2;
 }
 
-
-
-int JOY_x_pos(){
-	volatile char * ADC_Adress = (char*) 0x1400;
-	ADC_Adress[0]= 0x05; 
-	
-	while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
-		 
-	return digital2Prosent(ADC_Adress[0]);
-}
-
-
-int JOY_y_pos(){
-	volatile char * ADC_Adress = (char*) 0x1400;
-	ADC_Adress[0]= 0x04;
-	while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
-	return digital2Prosent(ADC_Adress[0]);	
-}
-
 uint8_t JOY_x_pos_raw(){
 	volatile char * ADC_Adress = (char*) 0x1400;
 	ADC_Adress[0]= 0x05;
@@ -47,6 +28,17 @@ uint8_t JOY_y_pos_raw(){
 	while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
 	return ADC_Adress[0];
 }
+
+
+int JOY_x_pos(){
+	return digital2Prosent(JOY_x_pos_raw());
+}
+
+
+int JOY_y_pos(){
+	return digital2Prosent(JOY_y_pos_raw());	
+}
+
 
 uint8_t JOY_slider(int slider){
 	
@@ -69,7 +61,8 @@ uint8_t JOY_slider(int slider){
 }
 
 joy_dir JOY_direction(int x_pos, int y_pos){
-	if( (x_pos < 5) &&	(y_pos < 5) && (x_pos > -5) && (y_pos > -5)){
+	
+	if( (x_pos < 20) &&	(y_pos < 20) && (x_pos > -20) && (y_pos > -20)){
 		return NEUTRAL;
 	}
 	
