@@ -20,15 +20,18 @@ typedef struct MenuNode {
 	
 	char* name;
 	unsigned int sub_nodes;
+	//struct MenuNode* (*menu_func) (struct MenuNode* node, int it); //might be unnecessary 
+	void (*node_func)();
 	
 } MenuNode;
 
 
 MenuNode* menu_init(char *name);
-MenuNode* menu_insert_submenu(MenuNode *parent, char* name);
-MenuNode* menu_insert_node(MenuNode* prev, MenuNode* next, char* name);
+MenuNode* menu_insert_submenu(MenuNode *parent, char* name , void (*node_function)());
+MenuNode* menu_insert_node(MenuNode* prev, MenuNode* next, char* name, void (*node_function)() );
 MenuNode* menu_move_to_submenu(MenuNode* node, int it);
 MenuNode* menu_build();
 
+MenuNode* menu_run_node_func(MenuNode* node, int it);
 
 #endif /* MENU_H_ */
