@@ -1,18 +1,19 @@
 /*
- * usart.c
+ * uart.c
  *
  * Created: 10.09.2015 08:40:23
  *  Author: eiriklid
  */ 
 #include <avr/io.h>
+#include <stdint.h>
 
-#include "usart.h"
+#include "uart.h"
 
-void USART_Init(unsigned int ubrr )
+void UART_Init(uint16_t ubrr )
 {
 	// Set baud rate
-	UBRR0H = (unsigned char) (ubrr >>8);
-	UBRR0L = (unsigned char) ubrr;
+	UBRR0H = (uint8_t) (ubrr >>8);
+	UBRR0L = (uint8_t) ubrr;
 	
 	// Enable receiver and transmitter
 	UCSR0B = (1<<RXEN0) | (1<<TXEN0);
@@ -21,7 +22,7 @@ void USART_Init(unsigned int ubrr )
 	UCSR0C = (1<<URSEL0) | (1<<USBS0) | (3<<UCSZ00);
 }
 
-void USART_Transmit( unsigned char data )
+void UART_Transmit( uint8_t data )
 {
 	/* Wait for empty transmit buffer*/
 	while( !( UCSR0A & (1<<UDRE0)) )
@@ -30,7 +31,7 @@ void USART_Transmit( unsigned char data )
 	UDR0 = data;
 }
 
-unsigned char USART_Receive()
+uint8_t UART_Receive()
 {
 	/* Wait for data to be received */
 	while( !(UCSR0A & (1<<RXC0)) )

@@ -85,3 +85,23 @@ MenuNode* menu_move_to_submenu(MenuNode* node, int it){
 }
 
 
+MenuNode* menu_build(){
+		MenuNode* main_menu = menu_init("Main Menu");
+		
+		//--------------Main menu items------------------------------
+		MenuNode* play = menu_insert_submenu(main_menu,"Play Pong");
+		MenuNode* h_score = menu_insert_node(play,play,"Highscore");
+		MenuNode* settings = menu_insert_node(h_score,play, "Settings");
+		MenuNode* excercises = menu_insert_node(h_score,settings, "Run Excercises");
+		
+		//--------------Exercise items-------------------------------
+		MenuNode* ex_sram = menu_insert_submenu(excercises,"Exercise 2: SRAM");
+		MenuNode* ex_adc = menu_insert_node(ex_sram, ex_sram, "Exercise 3: ADC");
+		
+		//-------------Settings items---------------------------------
+		MenuNode* settings_brightness = menu_insert_submenu(settings,"Adjust Brightness");
+		MenuNode* settings_reset = menu_insert_node(settings_brightness, settings_brightness, "Reset Highscore");
+		
+		
+		return main_menu;
+}

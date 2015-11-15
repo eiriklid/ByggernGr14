@@ -72,6 +72,8 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_RXB0SIDH	0x61
 #define MCP_RXB1CTRL	0x70
 #define MCP_RXB1SIDH	0x71
+#define MCP_BFPCTRL   0x0C
+
 
 
 #define MCP_TX_INT		0x1C		// Enable all transmit interrupts
@@ -187,7 +189,7 @@ Copyright 2003 Kimberly Otten Software Consulting
 unsigned char mcp2515_init();
 unsigned char mcp2515_read(unsigned char address);
 void mcp2515_write(unsigned char address, unsigned char data);
-void mcp2515_request_to_send(unsigned char buffer);
+void mcp2515_request_to_send(unsigned char buf);
 unsigned char mcp2515_read_status();
 void mcp2515_bit_modify(unsigned char address, unsigned char mask, unsigned char data);
 void mcp2515_reset();
@@ -196,4 +198,3 @@ void mcp2515_reset();
 
 
 #endif
-

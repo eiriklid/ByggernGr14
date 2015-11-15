@@ -13,17 +13,19 @@
 #include <stdio.h>
 #include <string.h>
 
+
+
 static uint8_t arrow_pos = 2;
 static uint8_t menu_size = 0;
 static MenuNode* current_menu;
 
-void write_c(char command){
-	volatile char * oled_Adress = (volatile char*) 0x1000;
+void write_c(uint8_t command){
+	volatile uint8_t * oled_Adress = (volatile uint8_t*) 0x1000;
 	oled_Adress[0] = command;
 }
 
-void write_d(char data){
-	volatile char * oled_Adress = (volatile char*) 0x1200;
+void write_d(uint8_t data){
+	volatile uint8_t * oled_Adress = (volatile uint8_t*) 0x1200;
 	oled_Adress[0] = data;
 }
 
@@ -81,12 +83,28 @@ void OLED_print_char(char character){
 	}
 }
 
+void OLED_print_char_inverted(char character){
+	for (int i = 0; i < 5; i++)
+	{
+		write_d(pgm_read_word_near(&(myfont[character-32][i]) )^(0xff));
+	}
+}
+
 void OLED_print_string(char* string){
 	
 	uint8_t length = strlen(string);
 	for (int i = 0; i < length; i++)
 	{
 		OLED_print_char(string[i]);
+	}
+}
+
+void OLED_print_string_inverted(char* string){
+	
+	uint8_t length = strlen(string);
+	for (int i = 0; i < length; i++)
+	{
+		OLED_print_char_inverted(string[i]);
 	}
 }
 
@@ -105,10 +123,11 @@ void OLED_move_arrow(uint8_t dir){
 	OLED_pos(arrow_pos, 0x15);
 	OLED_print_string(" ");
 	arrow_pos += (dir - 2) ;
+	
 	if(arrow_pos < 2){
 		arrow_pos = menu_size+1;
 	}
-	if(arrow_pos > menu_size+1){
+	if( (arrow_pos > menu_size+1) || (menu_size == 0) ){
 		arrow_pos = 2;
 	}
 	OLED_print_arrow(arrow_pos,0x15);
@@ -123,29 +142,31 @@ void OLED_pos(uint8_t row, uint8_t col){
 	write_c(high_col);
 }
 
-void OLED_menu(){
+void OLED_menu_init(){ 
 	
-	MenuNode* main_menu = menu_init("Main Menu");
-	current_menu = main_menu;
-
+	current_menu = menu_build();
 	
-	MenuNode* play = menu_insert_submenu(main_menu,"Play Pong");
-	MenuNode* h_score = menu_insert_node(play,play,"Highscore");
-	MenuNode* settings = menu_insert_node(h_score,play, "Settings");
-	MenuNode* excercises = menu_insert_node(h_score,settings, "Run Excercises");
-	
-	MenuNode* ex_sram = menu_insert_submenu(excercises,"Exercise 2: SRAM");
-	MenuNode* ex_adc = menu_insert_node(ex_sram, ex_sram, "Exercise 3: ADC");
-	
-	
-	OLED_print_menu(main_menu);
+	OLED_print_menu(current_menu);
 
 	
 }
 
 void OLED_print_menu(MenuNode* node){
-	OLED_pos(0, 0);
-	OLED_print_string(node->name);
+	//------------make headline-----------
+	OLED_pos(0, 0x00);
+	OLED_print_string_inverted("      ");	
+	OLED_print_string_inverted(node->name);
+	uint8_t string_lenght = strlen(node->name);
+	
+	for (uint8_t i =0; i < (20 - string_lenght) ; i++){
+		OLED_print_string_inverted(" ");
+	}
+	
+	//-----------print Raceflag------------
+	OLED_pos(1,0x00);
+	for (uint8_t i = 0; i < 64; i++){
+		OLED_print_race_flag();		
+	}
 	
 	menu_size = node->sub_nodes;
 	
@@ -154,6 +175,7 @@ void OLED_print_menu(MenuNode* node){
 	arrow_pos = 2;
 	OLED_print_arrow(arrow_pos,0x15);
 	
+	//----------print childs of node--------
 	for (uint8_t i = 2; i < menu_size + 2 ; i++)	 
 	{
 		OLED_pos(i,0x20);
@@ -163,6 +185,7 @@ void OLED_print_menu(MenuNode* node){
 }
 
 void OLED_print_submenu(){
+	OLED_slide_line(arrow_pos);
 	OLED_reset();
 	current_menu = menu_move_to_submenu(current_menu,arrow_pos-2);
 	OLED_print_menu(current_menu);
@@ -177,4 +200,33 @@ void OLED_print_parentmenu(){
 	OLED_reset();
 	current_menu = current_menu->parent;
 	OLED_print_menu(current_menu);
+}
+
+void OLED_print_race_flag(){
+	
+	write_d(0b10101010);
+	write_d(0b01010101);	
+}
+
+
+void OLED_slide_line(uint8_t row){
+	write_c(0x27); //left scroll
+	write_c(0x00); //dummy byte[A]
+	write_c(row); //start page[B]
+	write_c(0b111); //Time intervall between scroll step [C]
+	write_c(row); //end page[D]
+	write_c(0x00); //dummy byte[E]
+	write_c(0xff); //dummy byte[F]
+	write_c(0x2F); //Activate scroll
+	
+	uint8_t count = 250;
+	do 
+	{
+		printf("Sliding!"); // FINN EN BEDRE MÅTE Å ITERERE PÅ
+	} while (--count);
+	
+	
+	write_c(0x2E); //Deactivate scroll
+		
+	
 }

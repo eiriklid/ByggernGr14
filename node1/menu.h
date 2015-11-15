@@ -28,7 +28,7 @@ MenuNode* menu_init(char *name);
 MenuNode* menu_insert_submenu(MenuNode *parent, char* name);
 MenuNode* menu_insert_node(MenuNode* prev, MenuNode* next, char* name);
 MenuNode* menu_move_to_submenu(MenuNode* node, int it);
-
+MenuNode* menu_build();
 
 
 #endif /* MENU_H_ */

@@ -16,7 +16,14 @@ unsigned char mcp2515_init()
 	mcp2515_reset(); // Send reset-command
 	mcp2515_bit_modify(MCP_RXB0CTRL, 0b01100000, 0b01100000);
 	mcp2515_bit_modify(MCP_CANCTRL, MODE_MASK, MODE_NORMAL );
-
+  mcp2515_bit_modify(MCP_BFPCTRL, 0b00000101, 0b00000101);
+  
+  // Fjerne det under?????
+  uint8_t retVal = 0;
+  retVal = mcp2515_read(MCP_CANCTRL);
+  Serial.print("MCP CANCTRL is: ");
+  Serial.println(retVal,BIN);
+  
 	return 0;
 }
 
@@ -49,17 +56,17 @@ void mcp2515_write(unsigned char address, unsigned char data){
 	
 }
 
-void mcp2515_request_to_send(unsigned char buffer){
+void mcp2515_request_to_send(unsigned char buf){
 	
 	digitalWrite(SS,LOW);
 	
-	if (buffer > 2)
+	if (buf > 2)
 	{
 		SPI.transfer(MCP_RTS_ALL);
 	}
 	else
 	{
-		SPI.transfer( (0x80)|(1<<buffer) );
+		SPI.transfer( (0x80)|(1<<buf) );
 	}
 	
 	digitalWrite(SS,HIGH);
