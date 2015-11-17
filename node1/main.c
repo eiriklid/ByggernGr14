@@ -28,6 +28,7 @@
 #include "joystick_sender.h"
 
 
+
 int main(void)
 {
 	// -----------Blinking Led--------------------
@@ -51,6 +52,8 @@ int main(void)
 	// -----------CAN-----------------
 	SPI_MasterInit();	
 	CAN_init();
+	
+	highscore_init();
 	
 	
 	printf("Initialization Complete \n");
@@ -150,6 +153,7 @@ int main(void)
 		//printf("%d \n", mcp2515_read(0x67) );
 		
 		*/
+		/*
 		if( !((PIND & (1<< PD2)) == (1<<PD2)) ){ // Venter på lav på Interrupt
 		
 		can_message_t can_receive = CAN_data_receive();
@@ -159,7 +163,7 @@ int main(void)
 		printf("%d \n", can_receive.data[1]);
 		printf("%d \n", can_receive.data[2]);
 		}
-		
+		*/
 		//JOY_SENDER();
 		//printf("%d \n", JOY_button(0));
     }
