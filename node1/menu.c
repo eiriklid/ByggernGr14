@@ -11,7 +11,7 @@
 
 #include "menu.h"
 #include "sram.h" //Included for SRAM_test
-#include "oled.h" //Included for OLED_addjust_brightness
+#include "menu_functions.h" //Included for OLED_addjust_brightness
 
 MenuNode* menu_init(char *name){
 	MenuNode *top_menu = (MenuNode*)malloc(sizeof(MenuNode));
@@ -96,8 +96,8 @@ MenuNode* menu_build(){
 		MenuNode* main_menu = menu_init("Main Menu");
 		
 		//--------------Main menu items------------------------------
-		MenuNode* play = menu_insert_submenu(main_menu,"Play Pong",NULL);
-		MenuNode* h_score = menu_insert_node(play,play,"Highscore",NULL);
+		MenuNode* play = menu_insert_submenu(main_menu,"Play Pong",play_game);
+		MenuNode* h_score = menu_insert_node(play,play,"Highscore",OLED_print_highscore);
 		MenuNode* settings = menu_insert_node(h_score,play, "Settings",NULL);
 		MenuNode* excercises = menu_insert_node(h_score,settings, "Run Excercises",NULL);
 		
@@ -108,26 +108,35 @@ MenuNode* menu_build(){
 		
 		//-------------Settings items---------------------------------
 		MenuNode* settings_brightness = menu_insert_submenu(settings,"Adjust Brightness",OLED_addjust_brightness);
-		MenuNode* settings_brightness_run = menu_insert_submenu(settings_brightness ,"Run",NULL);
-		MenuNode* settings_brightness_adj = menu_insert_node(settings_brightness_run,settings_brightness_run,"Use left slider",NULL); //For text only
-		MenuNode* settings_brightness_exit = menu_insert_node(settings_brightness_adj,settings_brightness_run,"Left button: Set ",NULL); //For text only
-		
-		MenuNode* settings_reset = menu_insert_node(settings_brightness, settings_brightness, "Reset Highscore",NULL);
+		menu_set_description_line(settings_brightness,"Use left slider",1);		
+		MenuNode* settings_reset = menu_insert_node(settings_brightness, settings_brightness, "Reset Highscore",highscore_reset);
 		
 		
 		return main_menu;
 }
 
 
-MenuNode* menu_run_node_func(MenuNode* node, int it){
-	if (node->node_func == NULL)
-	{
-		return menu_move_to_submenu(node, it);
-	}
-	else{
-		node->node_func();
-		return node;
-	}
+
 	
-	
+
+
+void menu_set_description_line(MenuNode* node, char* text, int line){
+	switch (line){
+		case 1:
+			node->description_line_1 = text;
+			break;
+		case 2:
+			node->description_line_2 = text;
+			break;
+		case 3:
+			node->description_line_3 = text;
+			break;
+		case 4:
+			node->description_line_4 = text;
+			break;
+		default:
+			break;		
+	}
 }
+
+
