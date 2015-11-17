@@ -168,28 +168,49 @@ void OLED_print_menu(MenuNode* node){
 	for (uint8_t i = 0; i < 64; i++){
 		OLED_print_race_flag();		
 	}
-	
-	menu_size = node->sub_nodes;
-	
-	MenuNode* curr = node->child;
-	
-	arrow_pos = 2;
-	OLED_print_arrow(arrow_pos,0x15);
-	
-	//----------print childs of node--------
-	for (uint8_t i = 2; i < menu_size + 2 ; i++)	 
+	if (node->node_func == NULL)
 	{
-		OLED_pos(i,0x20);
-		OLED_print_string(curr->name);
-		curr= curr->next;
-	} 
+	
+	
+		menu_size = node->sub_nodes;
+	
+		MenuNode* curr = node->child;
+	
+		arrow_pos = 2;
+		OLED_print_arrow(arrow_pos,0x15);
+	
+		//----------print childs of node--------
+		for (uint8_t i = 2; i < menu_size + 2 ; i++)	 
+		{
+			OLED_pos(i,0x20);
+			OLED_print_string(curr->name);
+			curr= curr->next;
+		}
+	}
+	else{
+		OLED_pos(2,0x20);
+		OLED_print_string(node->description_line_1);
+		
+		OLED_pos(2,0x20);
+		OLED_print_string(node->description_line_2);
+		
+		OLED_pos(4,0x20);
+		OLED_print_string(node->description_line_3);
+		
+		OLED_pos(5,0x20);
+		OLED_print_string(node->description_line_4);
+	}
 }
 
 void OLED_print_submenu(){
 	OLED_slide_line(arrow_pos);
-	current_menu = menu_run_node_func(current_menu,arrow_pos-2);	
-	OLED_reset();
+	OLED_reset();	
+	current_menu = menu_move_to_submenu(current_menu,arrow_pos-2); //endre til menu_move_to_sub_menu?	
 	OLED_print_menu(current_menu);
+	if(current_menu->node_func!= NULL){
+		current_menu->node_func();
+		
+	}
 }
 
 void OLED_print_parentmenu(){
@@ -233,12 +254,5 @@ void OLED_slide_line(uint8_t row){
 	
 }
 
-void OLED_addjust_brightness(){
-	while(!JOY_button(1)){
-		write_c(0x81);
-		write_c(JOY_slider(1));
-		
-	}
-	
-}
+
 
