@@ -21,6 +21,10 @@ typedef struct MenuNode {
 	char* name;
 	unsigned int sub_nodes; 
 	void (*node_func)();
+	char* description_line_1;
+	char* description_line_2;
+	char* description_line_3;
+	char* description_line_4;
 	
 } MenuNode;
 
@@ -31,6 +35,6 @@ MenuNode* menu_insert_node(MenuNode* prev, MenuNode* next, char* name, void (*no
 MenuNode* menu_move_to_submenu(MenuNode* node, int it);
 MenuNode* menu_build();
 
-MenuNode* menu_run_node_func(MenuNode* node, int it);
+void menu_set_description_line(MenuNode* node, char* text, int line);
 
 #endif /* MENU_H_ */
