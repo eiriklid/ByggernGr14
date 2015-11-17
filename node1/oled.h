@@ -34,6 +34,5 @@ void OLED_print_submenu();
 void OLED_print_parentmenu();
 void OLED_print_race_flag();
 void OLED_slide_line(uint8_t row);
-void OLED_addjust_brightness();
 
 #endif /* OLED_H_ */
