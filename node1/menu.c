@@ -96,20 +96,30 @@ MenuNode* menu_build(){
 		MenuNode* main_menu = menu_init("Main Menu");
 		
 		//--------------Main menu items------------------------------
-		MenuNode* play = menu_insert_submenu(main_menu,"Play Pong",play_game);
-		MenuNode* h_score = menu_insert_node(play,play,"Highscore",OLED_print_highscore);
+		MenuNode* play = menu_insert_submenu(main_menu,"Play Pong",menu_func_play_game);
+		menu_set_description_line(play,"Joystick to control,",1);
+		menu_set_description_line(play,"right button to push.",2);
+		menu_set_description_line(play,"Good luck!",4);
+		
+		MenuNode* h_score = menu_insert_node(play,play,"Highscore",menu_func_OLED_print_highscore);
 		MenuNode* settings = menu_insert_node(h_score,play, "Settings",NULL);
 		MenuNode* excercises = menu_insert_node(h_score,settings, "Run Excercises",NULL);
 		
 		//--------------Exercise items-------------------------------
 		MenuNode* ex_sram = menu_insert_submenu(excercises,"Exercise 2: SRAM",SRAM_test);
-		menu_insert_submenu(ex_sram,"Run",NULL);		
+		menu_set_description_line(ex_sram,"SRAM_test is running.",2);
+		menu_set_description_line(ex_sram,"See Termite for result.",3);
+		
 		MenuNode* ex_adc = menu_insert_node(ex_sram, ex_sram, "Exercise 3: ADC",NULL);
 		
 		//-------------Settings items---------------------------------
-		MenuNode* settings_brightness = menu_insert_submenu(settings,"Adjust Brightness",OLED_addjust_brightness);
-		menu_set_description_line(settings_brightness,"Use left slider",1);		
-		MenuNode* settings_reset = menu_insert_node(settings_brightness, settings_brightness, "Reset Highscore",highscore_reset);
+		MenuNode* settings_brightness = menu_insert_submenu(settings,"Adjust Brightness",menu_func_OLED_addjust_brightness);
+		menu_set_description_line(settings_brightness,"Use left slider to adjust",2);
+		menu_set_description_line(settings_brightness,"brightness.",3);
+		menu_set_description_line(settings_brightness,"Press left button to set.",4);
+				
+		MenuNode* settings_reset = menu_insert_node(settings_brightness, settings_brightness, "Reset Highscore",menu_func_highscore_reset);
+		menu_set_description_line(settings_reset,"      Highscore reset!",2);
 		
 		
 		return main_menu;
