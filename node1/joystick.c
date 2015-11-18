@@ -14,10 +14,11 @@ int digital2Prosent(int val){
 	return (((val*100)/255)-50)*2;
 }
 
+
 uint8_t JOY_x_pos_raw(){
 	volatile char * ADC_Adress = (char*) 0x1400;
 	ADC_Adress[0]= 0x05;
-	while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
+	while( ((PIND & (1<< PD3)) == (1<<PD3))){} 
 	return ADC_Adress[0];
 }
 
@@ -25,7 +26,7 @@ uint8_t JOY_x_pos_raw(){
 uint8_t JOY_y_pos_raw(){
 	volatile char * ADC_Adress = (char*) 0x1400;
 	ADC_Adress[0]= 0x04;
-	while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
+	while( ((PIND & (1<< PD3)) == (1<<PD3))){} 
 	return ADC_Adress[0];
 }
 
@@ -46,7 +47,7 @@ uint8_t JOY_slider(int slider){
 	{
 		volatile char * ADC_Adress = (char*) 0x1400;
 		ADC_Adress[0]= 0x06;
-		while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
+		while( ((PIND & (1<< PD3)) == (1<<PD3))){}  
 		return ADC_Adress[0];
 		
 	} 
@@ -54,11 +55,12 @@ uint8_t JOY_slider(int slider){
 	{
 		volatile char * ADC_Adress = (char*) 0x1400;
 		ADC_Adress[0]= 0x07;
-		while( ((PIND & (1<< PD3)) == (1<<PD3))){} // Venter på lav på Interrupt
+		while( ((PIND & (1<< PD3)) == (1<<PD3))){}  
 		return ADC_Adress[0];
 	}
 	
 }
+
 
 joy_dir JOY_direction(int x_pos, int y_pos){
 	
@@ -79,7 +81,6 @@ joy_dir JOY_direction(int x_pos, int y_pos){
 		}
 		return DOWN;
 	}
-
 	
 }
 
@@ -92,6 +93,7 @@ const char* dir2string( joy_dir dir){
 		case DOWN:	return "DOWN";
 		case UP:	return "UP";
 	}
+
 	return 0;
 }
 	
@@ -107,15 +109,14 @@ int JOY_button(int button){
 	{
 		 return ( (PINB & (1<< PB2)) == (1<< PB2) );
 	}
+
 	return -1;
-	
 }
 
 void JOY_init(){
 	
 	clear_bit(DDRB, PB1);
 	clear_bit(DDRB, PB2);
-	
 	
 }
 
