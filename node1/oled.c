@@ -120,18 +120,22 @@ void OLED_print_arrow(uint8_t row, uint8_t col){
 	
 }
 
-void OLED_move_arrow(uint8_t dir){
-	OLED_pos(arrow_pos, 0x15);
-	OLED_print_string(" ");
-	arrow_pos += (dir - 2) ;
+void OLED_move_arrow(int8_t dir){
+	if(menu_size != 0){
+		OLED_pos(arrow_pos, 0x15);
+		OLED_print_string(" ");
+		
+		arrow_pos += dir ;
 	
-	if(arrow_pos < 2){
-		arrow_pos = menu_size+1;
+		if(arrow_pos < 2){
+			arrow_pos = menu_size+1;
+		}
+		if( (arrow_pos > menu_size+1)){
+			arrow_pos = 2;
+		}
+		OLED_print_arrow(arrow_pos,0x15);
 	}
-	if( (arrow_pos > menu_size+1) || (menu_size == 0) ){
-		arrow_pos = 2;
-	}
-	OLED_print_arrow(arrow_pos,0x15);
+	
 }
 
 void OLED_pos(uint8_t row, uint8_t col){
@@ -168,11 +172,12 @@ void OLED_print_menu(MenuNode* node){
 	for (uint8_t i = 0; i < 64; i++){
 		OLED_print_race_flag();		
 	}
+	menu_size = node->sub_nodes;
+	
 	if (node->node_func == NULL)
 	{
 	
 	
-		menu_size = node->sub_nodes;
 	
 		MenuNode* curr = node->child;
 	
@@ -188,16 +193,16 @@ void OLED_print_menu(MenuNode* node){
 		}
 	}
 	else{
-		OLED_pos(2,0x20);
+		OLED_pos(2,0x00);
 		OLED_print_string(node->description_line_1);
 		
-		OLED_pos(2,0x20);
+		OLED_pos(3,0x00);
 		OLED_print_string(node->description_line_2);
 		
-		OLED_pos(4,0x20);
+		OLED_pos(4,0x00);
 		OLED_print_string(node->description_line_3);
 		
-		OLED_pos(5,0x20);
+		OLED_pos(5,0x00);
 		OLED_print_string(node->description_line_4);
 	}
 }
