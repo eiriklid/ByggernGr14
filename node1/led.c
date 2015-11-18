@@ -13,7 +13,7 @@
 void led_init(){
 	set_bit(DDRB,PB0);        //set port B bit zero to output
 	TCCR0 |= (1<<CS01)|(1<<CS00);  //normal mode, no prescaling
-	//ASSR  |= (1<<AS0);   //use ext oscillator
+	
 	TIMSK |= (1<<TOIE0); //allow interrupts on overflow
 	
 	sei();               //interrupts turned on
