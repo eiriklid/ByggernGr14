@@ -10,8 +10,9 @@
 #include <stdio.h>
 
 #include "menu.h"
-#include "sram.h" //Included for SRAM_test
+#include "sram.h"			//Included for SRAM_test
 #include "menu_functions.h" //Included for OLED_addjust_brightness
+
 
 MenuNode* menu_init(char *name){
 	MenuNode *top_menu = (MenuNode*)malloc(sizeof(MenuNode));
@@ -110,8 +111,6 @@ MenuNode* menu_build(){
 		menu_set_description_line(ex_sram,"SRAM_test is running.",2);
 		menu_set_description_line(ex_sram,"See Termite for result.",3);
 		
-		MenuNode* ex_adc = menu_insert_node(ex_sram, ex_sram, "Exercise 3: ADC",NULL);
-		
 		//-------------Settings items---------------------------------
 		MenuNode* settings_brightness = menu_insert_submenu(settings,"Adjust Brightness",menu_func_OLED_addjust_brightness);
 		menu_set_description_line(settings_brightness,"Use left slider to adjust",2);
@@ -121,13 +120,14 @@ MenuNode* menu_build(){
 		MenuNode* settings_reset = menu_insert_node(settings_brightness, settings_brightness, "Reset Highscore",menu_func_highscore_reset);
 		menu_set_description_line(settings_reset,"      Highscore reset!",2);
 		
+		MenuNode* settings_devices = menu_insert_node(settings_reset,settings_brightness,"Choose Device",NULL);
+
+		MenuNode* devices_joystick = menu_insert_submenu(settings_devices,"Joystick",menu_func_choose_joystick);
+		MenuNode* devices_slider = menu_insert_node(devices_joystick,devices_joystick,"Slider",menu_func_choose_slider);
+		menu_insert_node(devices_slider,devices_joystick, "Ultrasonic Sensor", menu_func_choose_ultrasonic);
 		
 		return main_menu;
 }
-
-
-
-	
 
 
 void menu_set_description_line(MenuNode* node, char* text, int line){
