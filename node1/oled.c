@@ -9,31 +9,32 @@
 #include "menu.h"
 #include "font_5x7.h"
 #include "oled.h"
-#include "joystick.h" //Included for slider and button in OLED_addjust_brightness
 
 #include <stdio.h>
 #include <string.h>
-
-
 
 static uint8_t arrow_pos = 2;
 static uint8_t menu_size = 0;
 static MenuNode* current_menu;
 
+
 void write_c(uint8_t command){
-	volatile uint8_t * oled_Adress = (volatile uint8_t*) 0x1000;
+
+	volatile uint8_t * oled_Adress = (volatile uint8_t*) 0x1000;  // Start address for the OLED CMD
 	oled_Adress[0] = command;
+
 }
 
 void write_d(uint8_t data){
-	volatile uint8_t * oled_Adress = (volatile uint8_t*) 0x1200;
+
+	volatile uint8_t * oled_Adress = (volatile uint8_t*) 0x1200;  // Start address for the OLED CMD
 	oled_Adress[0] = data;
+
 }
 
 
+void OLED_init(){
 
-void OLED_init()
-{
 	write_c(0xae);    // display off
 	write_c(0xa1);    //segment remap
 	write_c(0xda);    //common pads hardware: alternative
@@ -121,9 +122,10 @@ void OLED_print_arrow(uint8_t row, uint8_t col){
 }
 
 void OLED_move_arrow(int8_t dir){
+
 	if(menu_size != 0){
 		OLED_pos(arrow_pos, 0x15);
-		OLED_print_string(" ");
+		OLED_print_string(" ");			// Remove the last arrow
 		
 		arrow_pos += dir ;
 	
@@ -134,11 +136,11 @@ void OLED_move_arrow(int8_t dir){
 			arrow_pos = 2;
 		}
 		OLED_print_arrow(arrow_pos,0x15);
-	}
-	
+	}	
 }
 
 void OLED_pos(uint8_t row, uint8_t col){
+
 	uint8_t low_col		= (col & (0xf) );					//And-operation between col and 0b1111
 	uint8_t high_col	= ((col >> 4) & (0xf) ) + 0x10;		//Bitwise-shifting, And-Operation, Offset to write to higher column start address
 	
@@ -150,14 +152,12 @@ void OLED_pos(uint8_t row, uint8_t col){
 void OLED_menu_init(){ 
 	
 	current_menu = menu_build();
-	
 	OLED_print_menu(current_menu);
-
-	
 }
 
 void OLED_print_menu(MenuNode* node){
-	//------------make headline-----------
+
+	//------------Make Headline-----------
 	OLED_pos(0, 0x00);
 	OLED_print_string_inverted("      ");	
 	OLED_print_string_inverted(node->name);
@@ -167,26 +167,23 @@ void OLED_print_menu(MenuNode* node){
 		OLED_print_string_inverted(" ");
 	}
 	
-	//-----------print Raceflag------------
+	//-----------Print Raceflag------------
 	OLED_pos(1,0x00);
 	for (uint8_t i = 0; i < 64; i++){
 		OLED_print_race_flag();		
 	}
 	menu_size = node->sub_nodes;
 	
-	if (node->node_func == NULL)
-	{
-	
-	
+	if (node->node_func == NULL){
 	
 		MenuNode* curr = node->child;
 	
 		arrow_pos = 2;
 		OLED_print_arrow(arrow_pos,0x15);
 	
-		//----------print childs of node--------
-		for (uint8_t i = 2; i < menu_size + 2 ; i++)	 
-		{
+		//----------Print Childs of Node--------
+		for (uint8_t i = 2; i < menu_size + 2 ; i++){
+
 			OLED_pos(i,0x20);
 			OLED_print_string(curr->name);
 			curr= curr->next;
@@ -208,9 +205,10 @@ void OLED_print_menu(MenuNode* node){
 }
 
 void OLED_print_submenu(){
+
 	OLED_slide_line(arrow_pos);
 	OLED_reset();	
-	current_menu = menu_move_to_submenu(current_menu,arrow_pos-2); //endre til menu_move_to_sub_menu?	
+	current_menu = menu_move_to_submenu(current_menu,arrow_pos-2);	
 	OLED_print_menu(current_menu);
 	if(current_menu->node_func!= NULL){
 		current_menu->node_func();
@@ -237,26 +235,24 @@ void OLED_print_race_flag(){
 
 
 void OLED_slide_line(uint8_t row){
-	write_c(0x27); //left scroll
-	write_c(0x00); //dummy byte[A]
-	write_c(row); //start page[B]
-	write_c(0b111); //Time intervall between scroll step [C]
-	write_c(row); //end page[D]
-	write_c(0x00); //dummy byte[E]
-	write_c(0xff); //dummy byte[F]
-	write_c(0x2F); //Activate scroll
+
+	write_c(0x27);	 //left scroll
+	write_c(0x00);	 //dummy byte[A]
+	write_c(row);	 //start page[B]
+	write_c(0b111);  //Time intervall between scroll step [C]
+	write_c(row);	 //end page[D]
+	write_c(0x00);	 //dummy byte[E]
+	write_c(0xff);	 //dummy byte[F]
+	write_c(0x2F);	 //Activate scroll
 	
 	uint8_t count = 250;
 	do 
 	{
-		
-		//printf("Sliding!"); // FINN EN BEDRE MÅTE Å ITERERE PÅ
+		printf("\t\t\t\t\t\t\t\n");   //Use to enable scrolling
 	} while (--count);
-	
 	
 	write_c(0x2E); //Deactivate scroll
 		
-	
 }
 
 
