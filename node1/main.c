@@ -58,113 +58,29 @@ int main(void)
 	
 	printf("Initialization Complete \n");
 	
-	
+
     while(1)
     { 
-		
-		
-		
-		// -----------Ex.1-----------------
-		
-		//printf("Exercise 1 is working properly! :D \n");
-		
-		
-		// -----------Ex.2-----------------
-		//SRAM_test();
-
-		
-		
-		// -----------Ex.3-----------------
-		/*	
-		printf("X er: %d \t Y er: %d \n", JOY_x_pos(),JOY_y_pos());
-		
-		printf("Slider left: %d \t Slider right %d \n", JOY_slider(1), JOY_slider(0) );
-		printf("Direction: %d \n\n", JOY_direction( JOY_x_pos(), JOY_y_pos()));
-		*/
-		
-		
-		//Menu-arrow
 		
 		
 		joy_dir direction = JOY_direction(JOY_x_pos(), JOY_y_pos());
 		
 		if (direction == DOWN){
-			OLED_move_arrow(3);
-			_delay_ms(250);
-			
+			OLED_move_arrow(1);
+			_delay_ms(250);			
 		}
 		if (direction == UP){			
-			OLED_move_arrow(1);
+			OLED_move_arrow(-1);
 			_delay_ms(250);
-
 		}
-		if (direction == RIGHT){
+		
+		if (JOY_button(0)){
 			OLED_print_submenu();
 			_delay_ms(250);
-			
 		}
-		if (direction == LEFT){
+		if (JOY_button(1)){
 			OLED_print_parentmenu();
 			_delay_ms(250);
-
 		}
-		
-		
-		
-		/*
-		printf("Left: %d \n",JOY_button(1));
-		printf("Right: %d \n",JOY_button(0));
-		*/
-		
-		
-		
-		
-		//Test for SPI, short circuit MISO & MOSI 
-		/*
-		SPI_send(0x4a);
-		volatile uint8_t i = SPI_read();
-		*/
-		
-		/*
-		mcp2515_reset();
-		
-		mcp2515_write(0x36, 0xAA);
-		
-		printf("CANSTAT  0x%02x \n", mcp2515_read(0x36));
-		*/
-		
-		//Test for CAN - send & receive msg
-		/*
-		can_message_t can_msg;
-		
-		//can_msg.id = 0b11000101010;
-		can_msg.id = 237;
-		
-		can_msg.length = 3;
-		can_msg.data[0] = 24;
-		can_msg.data[1] = 46;
-		can_msg.data[2] = 68;
-		
-		
-		CAN_message_send(&can_msg);
-		
-		
-		//printf("%d \n", mcp2515_read(0x66) );
-		//printf("%d \n", mcp2515_read(0x67) );
-		
-		*/
-		/*
-		if( !((PIND & (1<< PD2)) == (1<<PD2)) ){ // Venter på lav på Interrupt
-		
-		can_message_t can_receive = CAN_data_receive();
-		
-		printf("ID: %d \n", can_receive.id);
-		printf("%d \n", can_receive.data[0]);
-		printf("%d \n", can_receive.data[1]);
-		printf("%d \n", can_receive.data[2]);
-		}
-		*/
-		//JOY_SENDER();
-		//printf("%d \n", JOY_button(0));
     }
 }
