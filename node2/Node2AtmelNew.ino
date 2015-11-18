@@ -36,6 +36,9 @@ uint8_t device = 0;
 //--- Motor------------
 #define DIR_pin A3
 #define MOTOR_ENABLE A4
+#define MOTOR_UPPER_TRESHOLD 131
+#define MOTOR_LOWER_TRESHOLD 127
+
 int dir_val = 0;
 
 //----Encoder------------
@@ -62,7 +65,8 @@ int16_t pid_val = 0;
 #define min_out = 70;
 #define max_out = 120;
 
-#define sample_time 20
+#define SAMPLE_TIME 20
+#define TIME_TRESHOLD 200
 uint32_t current_time = 0;
 uint32_t last_sample_time = 0;
 uint32_t time_difference = 0;
@@ -131,7 +135,7 @@ void loop()
   if(digitalRead(RX0BF_pin) == 0){
    
     can_receive= CAN_data_receive();
-    //Serial.println(can_receive.id);
+    
     if (can_receive.id == 1){
       
       game_over = 0;
@@ -196,11 +200,11 @@ void loop()
 
   //-----Motor-----------
   if(device == 1){
-    //Burde legge inn buffer som konstanter
     
-    if( (can_receive.data[2]< 127) || (can_receive.data[2] > 131) ){
-      if(can_receive.data[2] > 131){
-          dir_val =( (can_receive.data[2]-130));  //Trekker fra offset og multipliserer med 2
+    
+    if( (can_receive.data[2]< MOTOR_LOWER_TRESHOLD) || (can_receive.data[2] > MOTOR_UPPER_TRESHOLD) ){
+      if(can_receive.data[2] > MOTOR_UPPER_TRESHOLD){
+          dir_val =( (can_receive.data[2]-MOTOR_UPPER_TRESHOLD));  //Subtracting offset and multiply by 2
           
           digitalWrite(DIR_pin, HIGH);
           digitalWrite(MOTOR_ENABLE, HIGH);
@@ -211,7 +215,7 @@ void loop()
           Wire.endTransmission();
         }
         else{
-          dir_val =( (0x7F - can_receive.data[2]));  //Inverterer verdi og multipliserer med 2
+          dir_val =( (MOTOR_LOWER_TRESHOLD - can_receive.data[2]));  //Inverterer verdi og multipliserer med 2
           
           digitalWrite(DIR_pin, LOW);
           digitalWrite(MOTOR_ENABLE, HIGH);
@@ -228,11 +232,9 @@ void loop()
       }
       
   }
-    
-  //-----Encoder--------------
-  if(device == 2){
-      
-    
+  if((device==2) ||  (device==3) ){
+	//-----Encoder--------------
+  
     digitalWrite(A6, HIGH); // !Reset encoder
     digitalWrite(A7, LOW); // !OE low
     digitalWrite(A5, LOW); // get high byte
@@ -241,7 +243,7 @@ void loop()
     msb = PINK ;
     
     digitalWrite(A5, HIGH); // get low byte
-    delayMicroseconds(20); //is this microseconds?
+    delayMicroseconds(20); 
     lsb = PINK;
     
     for(i = 0; i <8; i++){
@@ -258,18 +260,24 @@ void loop()
     
     digitalWrite(A7, HIGH); // !OE high
     Serial.println(encoder_data);
+	  
+  }
+  
+  if(device == 2){
+      
+    
 
-    //----PI(D)- regulator-------
+    //---- PID-regulator -------
     
     
    
     current_time = millis();
     time_difference = current_time -last_sample_time;
-    if(time_difference >= sample_time){
+    if(time_difference >= SAMPLE_TIME){
       Serial.print(time_difference);
       error = can_receive.data[2] - map( encoder_data, 0, 10000, 255, 0);
       
-      if(time_difference > 200){    //for å fjerne feil tid på første måling 
+      if(time_difference > TIME_TRESHOLD){    //To make sure the loop is runing properly 
         Serial.println("TIME FAIL!!!!!!!!");
          
       }
@@ -283,28 +291,7 @@ void loop()
       last_sample_time = current_time;
     }
     
-  /*
-    Serial.print("Encoder:\t");
-    Serial.print(encoder_data);
-    Serial.print("\t Encoder_map:\t");
-    Serial.print(map( encoder_data, 0, 10000, 255, 0));
-    */
-    
-    Serial.print("\tRef: \t");
-    Serial.print(can_receive.data[2]);
-    Serial.print("\terror: \t");
-    Serial.print(error);
-    Serial.print("\tK_P error: \t");
-    Serial.print(K_p*error);
-    Serial.print("\tIntegral: \t");
-    Serial.print(K_i*error_integral);
-    Serial.print("\tDerivative: \t");
-    Serial.print(K_d*d_error,6);
-    Serial.print("\t Output: ");
-    Serial.println(pid_val);
-    
-    
-    if(time_difference < 200){
+    if(time_difference < TIME_TRESHOLD){
       if(pid_val < 0){
           digitalWrite(DIR_pin, LOW);
           digitalWrite(MOTOR_ENABLE, HIGH);
@@ -343,44 +330,19 @@ void loop()
         //Serial.println(sum_distance);
         }
     
-    digitalWrite(A6, HIGH); // !Reset encoder
-    digitalWrite(A7, LOW); // !OE low
-    digitalWrite(A5, LOW); // get high byte
-    
-    delayMicroseconds(20); 
-    msb = PINK ;
-    
-    digitalWrite(A5, HIGH); // get low byte
-    delayMicroseconds(20); //is this microseconds?
-    lsb = PINK;
-    
-    for(i = 0; i <8; i++){
-      
-      if(msb & (1 << i)){
-         
-        encoder_data += (1 << (15-i));
-      }
-      if(lsb & (1 << i)){
-        
-        encoder_data += (1 << (7-i));
-      }
-    }
-    
-    digitalWrite(A7, HIGH); // !OE high
-    
 
-    //----PI(D)- regulator-------
+    //---- PID-regulator -------
     
     
    
     current_time = millis();
     time_difference = current_time -last_sample_time;
-    if(time_difference >= sample_time){
+    if(time_difference >= SAMPLE_TIME){
       //Serial.println(time_difference);
       if(sum_distance < 3000){
         error = map(sum_distance,300,2300,0,255) - map( encoder_data, 0, 10000, 0, 255);
         
-        if(time_difference > 200){    //for å fjerne feil tid på første måling 
+        if(time_difference > TIME_TRESHOLD){    //for å fjerne feil tid på første måling 
           Serial.println("TIME FAIL!!!!!!!!");
            
         }
@@ -420,7 +382,7 @@ void loop()
     Serial.println(pid_val);
     */
     
-    if(time_difference < 200){
+    if(time_difference < TIME_TRESHOLD){
       if(pid_val > 0){
           digitalWrite(DIR_pin, LOW);
           digitalWrite(MOTOR_ENABLE, HIGH);
