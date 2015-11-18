@@ -130,6 +130,13 @@ void loop()
       lives = 3;
       game_start_time = millis();
       Serial.println("Starting Game!");
+      can_message_t start_msg;
+      start_msg.id = 5;
+      start_msg.len = 3;
+      start_msg.data[0] = lives;
+      start_msg.data[1] = 0;
+      start_msg.data[2] = 0;
+      CAN_message_send(&start_msg);
     }
     
   }
@@ -139,11 +146,20 @@ void loop()
   IR_val = analogRead(IR_pin);    // read the input pin
   //Serial.println(IR_val);
   
-  if( ( (IR_val) < 20) && !(game_over) && (millis() > (start_time + Bounce_delay) ) ){   
+  if( ( (IR_val) < 20) && (millis() > (start_time + Bounce_delay) ) ){   
     lives--;
     Serial.println(lives);
     start_time = millis();
-    
+    can_message_t can_msg;
+  
+    can_msg.id = 3;
+    can_msg.len = 3;
+    highscore_time = millis()-game_start_time;
+    Serial.println(highscore_time);
+    can_msg.data[0]= lives;
+    can_msg.data[1] = (highscore_time & 0xFF);           //low_highscore
+    can_msg.data[2] = ((highscore_time >> 8) & 0xFF);    //high_highscore
+    CAN_message_send(&can_msg);
   }
   else{
     if (!(lives)){
@@ -156,9 +172,9 @@ void loop()
   
       can_msg.id = 2;
       can_msg.len = 3;
-      can_msg.data[0] = (highscore_time & 0xFF);           //low_highscore
-      can_msg.data[1] = ((highscore_time >> 8) & 0xFF);    //high_highscore
-      can_msg.data[2] = 9;
+      can_msg.data[0] = lives; 
+      can_msg.data[1] = (highscore_time & 0xFF);           //low_highscore
+      can_msg.data[2] = ((highscore_time >> 8) & 0xFF);    //high_highscore
   
       CAN_message_send(&can_msg);
       }
@@ -171,10 +187,6 @@ void loop()
     if(can_receive.data[0] > 131){
         dir_val =( (can_receive.data[0]-130));  //Trekker fra offset og multipliserer med 2
         
-        Serial.print("\t Hoyre: \t"); 
-        Serial.println(dir_val);
-        
-        
         digitalWrite(DIR_pin, HIGH);
         digitalWrite(MOTOR_ENABLE, HIGH);
 
@@ -185,9 +197,6 @@ void loop()
       }
       else{
         dir_val =( (0x7F - can_receive.data[0]));  //Inverterer verdi og multipliserer med 2
-        
-        Serial.print("\t Venstre: \t"); 
-        Serial.println(dir_val);
         
         digitalWrite(DIR_pin, LOW);
         digitalWrite(MOTOR_ENABLE, HIGH);
