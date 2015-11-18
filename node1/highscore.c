@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 void highscore_init(){
+
 	volatile uint8_t *ext_ram = (uint8_t *) 0x1800; // Start address for the SRAM
 	
 	for (int i = 0; i < 10; i++)
@@ -16,16 +17,18 @@ void highscore_init(){
 }
 
 uint8_t highscore_add(uint16_t score){
+
 	uint16_t temp_score = 0;
 	uint8_t position = 0;
 
 	volatile uint8_t *ext_ram = (uint8_t *) 0x1800; // Start address for the SRAM
 	
-	for(int i = 0; i < 5; i++){
+	for(int i = 0; i < 5; i++){						//Insertion sort
 		temp_score = ( (ext_ram[2*i]<<8) +ext_ram[2*i+1] );
 		
-		if (temp_score< score){
+		if (temp_score < score){
 			position = i;
+
 			for (int j = 8; j >= i; j-- )
 			{
 				ext_ram[j+2] = ext_ram[j];  
@@ -36,14 +39,16 @@ uint8_t highscore_add(uint16_t score){
 		}
 		
 	}
+
 	return (position+1);
 }
 
 uint16_t highscore_get(uint8_t index){
+
 	volatile uint8_t *ext_ram = (uint8_t *) 0x1800; // Start address for the SRAM
 	uint16_t temp_score = ( (ext_ram[2*index]<<8) + ext_ram[2*index+1] );
+
 	return temp_score;
-	
 }
 
 	
