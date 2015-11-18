@@ -25,13 +25,7 @@ void SPI_MasterInit(){
 	set_bit(SPCR,MSTR); //Select Master
 	set_bit(SPCR,SPR0); //Clock rate fck/16
 	
-	/*
-	DDRB |= (1 << PB4)|(1 << PB5)|(1 << PB7);
-	PORTB |= (1 << PB4)|(1 << PB5)|(1 << PB7);
-	DDRB  &= ~(1 << PB6);
-	
-	SPCR |= (1 << SPE)|(1 << SPR0)|(1 << MSTR);
-	*/
+
 	
 }
 
