@@ -28,7 +28,7 @@ int val = 0;
 int score = 0;
 bool game_over = 1;
 int lives = 3;
-unsigned long start_time;     //change name -- bounce_start_time
+unsigned long bounce_start_time;     
 #define Bounce_delay 1000
 uint16_t highscore_time = 0;
 uint16_t game_start_time = 0;
@@ -92,7 +92,7 @@ void setup()
   SPI.setClockDivider(SPI_CLOCK_DIV64);
   
   
-  myservo.attach(PWM_pin,PWM_min, PWM_max); //Maybe check if servo.attached
+  myservo.attach(PWM_pin,PWM_min, PWM_max); 
   myservo.write(90);    //Set servo to mid-point
 
   pinMode(IR_pin, INPUT);
@@ -157,17 +157,15 @@ void loop()
 
   //------ In Game------------
  if(!game_over){
-  myservo.write( map(can_receive.data[1], 0, 255, 0, 180) ); 
-  
-  IR_val = analogRead(IR_pin);    // read the input pin
-  //Serial.println(IR_val);
-  
+  myservo.write( map(can_receive.data[1], 0, 255, 0, 180) ); //Set servo angle
   
   //-------- IR Detection--------------
-  if( ( (IR_val) < 20) && (millis() > (start_time + Bounce_delay) ) ){   
+  IR_val = analogRead(IR_pin);    // Check if IR-beam is broken
+   
+  if( ( (IR_val) < 20) && (millis() > (bounce_start_time + Bounce_delay) ) ){   
     lives--;
     Serial.println(lives);
-    start_time = millis();
+    bounce_start_time = millis();
     can_message_t can_msg;
   
     can_msg.id = 3;
@@ -232,8 +230,8 @@ void loop()
       }
       
   }
+  //-----Encoder--------------
   if((device==2) ||  (device==3) ){
-	//-----Encoder--------------
   
     digitalWrite(A6, HIGH); // !Reset encoder
     digitalWrite(A7, LOW); // !OE low
@@ -314,7 +312,7 @@ void loop()
   
   }
 
-  //-----Ultrasonic
+  //-----Ultrasonic ---------------------------
     if(device == 3){
       //---- HC-SR04 (Other Arduino) ----------
       Wire.requestFrom(1,4); //request 4 bytes from slave device #1
@@ -327,7 +325,7 @@ void loop()
         }
         
         sum_distance = distance[3] + (distance[2] << 8) + (distance[1] << 16) + (distance[0] << 24);
-        //Serial.println(sum_distance);
+        
         }
     
 
@@ -338,7 +336,7 @@ void loop()
     current_time = millis();
     time_difference = current_time -last_sample_time;
     if(time_difference >= SAMPLE_TIME){
-      //Serial.println(time_difference);
+      
       if(sum_distance < 3000){
         error = map(sum_distance,300,2300,0,255) - map( encoder_data, 0, 10000, 0, 255);
         
@@ -361,26 +359,6 @@ void loop()
        
     }
     
-  /*
-    Serial.print("Encoder:\t");
-    Serial.print(encoder_data);
-    Serial.print("\t Encoder_map:\t");
-    Serial.print(map( encoder_data, 0, 10000, 255, 0));
-    */
-    /*
-    Serial.print("\tRef: \t");
-    Serial.print(sum_distance);
-    Serial.print("\terror: \t");
-    Serial.print(error);
-    Serial.print("\tK_P error: \t");
-    Serial.print(K_p*error);
-    Serial.print("\tIntegral: \t");
-    Serial.print(K_i*error_integral);
-    Serial.print("\tDerivative: \t");
-    Serial.print(K_d*d_error,6);
-    Serial.print("\t Output: ");
-    Serial.println(pid_val);
-    */
     
     if(time_difference < TIME_TRESHOLD){
       if(pid_val > 0){
