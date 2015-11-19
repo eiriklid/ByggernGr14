@@ -104,10 +104,7 @@ MenuNode* menu_build(){
 		
 		MenuNode* h_score = menu_insert_node(play,play,"Highscore",menu_func_OLED_print_highscore);
 		MenuNode* settings = menu_insert_node(h_score,play, "Settings",NULL);
-		MenuNode* excercises = menu_insert_node(h_score,settings, "Run Excercises",NULL);
-		
-		//--------------Exercise items-------------------------------
-		MenuNode* ex_sram = menu_insert_submenu(excercises,"Exercise 2: SRAM",SRAM_test);
+		MenuNode* ex_sram = menu_insert_node(h_score,settings,"Exercise 2: SRAM",SRAM_test);
 		menu_set_description_line(ex_sram,"SRAM_test is running.",2);
 		menu_set_description_line(ex_sram,"See Termite for result.",3);
 		
