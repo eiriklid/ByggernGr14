@@ -10,7 +10,7 @@
 #define HIGHSCORE_H_
 
 void highscore_init();
-void highscore_add(uint16_t score);
+uint8_t highscore_add(uint16_t score);
 uint16_t highscore_get(uint8_t index);
 
 
