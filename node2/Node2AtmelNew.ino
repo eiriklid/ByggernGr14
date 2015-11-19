@@ -104,6 +104,7 @@ void setup()
   pinMode(A5, OUTPUT); // SEL
   
   //-----Encoder calibration---------
+  
   uint16_t cal_time = millis();
   while( (millis()- cal_time )< 500){
         digitalWrite(DIR_pin, HIGH);
@@ -124,7 +125,7 @@ void setup()
   digitalWrite(A6, LOW); // !Reset encoder
   
   pinMode(SOLENOID_pin, OUTPUT);
-  
+  Serial.print("Setup Complete");
 }
 
 void loop()
@@ -136,12 +137,38 @@ void loop()
    
     can_receive= CAN_data_receive();
     
+    
     if (can_receive.id == 1){
       
       game_over = 0;
       lives = 3;
       device = can_receive.data[0];
+      if( (device==2)||(device==3)){
+        //-----Encoder calibration---------
+  
+              uint16_t cal_time = millis();
+              while( (millis()- cal_time )< 500){
+                    digitalWrite(DIR_pin, HIGH);
+                    digitalWrite(MOTOR_ENABLE, HIGH);
+            
+                    Wire.beginTransmission(0b0101000);
+                    Wire.write(byte(0x00));
+                    Wire.write(0xD0);
+                    Wire.endTransmission();
+                    
+              }
+              
+              Wire.beginTransmission(0b0101000);
+              Wire.write(byte(0x00));
+              Wire.write(0x00);
+              Wire.endTransmission();       
+              
+              digitalWrite(A6, LOW); // !Reset encoder
+              
+      }
       Serial.println("Starting Game!");
+      
+      
       game_start_time = millis();
       
       can_message_t start_msg;
@@ -199,7 +226,7 @@ void loop()
   //-----Motor-----------
   if(device == 1){
     
-    
+    Serial.println(can_receive.data[2]);
     if( (can_receive.data[2]< MOTOR_LOWER_TRESHOLD) || (can_receive.data[2] > MOTOR_UPPER_TRESHOLD) ){
       if(can_receive.data[2] > MOTOR_UPPER_TRESHOLD){
           dir_val =( (can_receive.data[2]-MOTOR_UPPER_TRESHOLD));  //Subtracting offset and multiply by 2
@@ -258,7 +285,7 @@ void loop()
     
     digitalWrite(A7, HIGH); // !OE high
     Serial.println(encoder_data);
-	  
+    
   }
   
   if(device == 2){
