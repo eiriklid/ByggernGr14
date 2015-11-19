@@ -35,12 +35,12 @@ uint8_t highscore_add(uint16_t score){
 			}
 			ext_ram[2*i] = ((score>> 8)& 0xFF);
 			ext_ram[2*i+1] = (score & 0xFF);
-			return position+1;				
+			break;				
 		}
 		
 	}
 
-	return 0;
+	return (position+1);
 }
 
 uint16_t highscore_get(uint8_t index){
@@ -50,5 +50,3 @@ uint16_t highscore_get(uint8_t index){
 
 	return temp_score;
 }
-
-	
